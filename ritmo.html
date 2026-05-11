@@ -64,15 +64,98 @@
         }
         .racha { color: #E69500; font-size: 0.75rem; background: rgba(230,149,0,0.15); display: inline-block; padding: 0.2rem 1rem; border-radius: 30px; margin-bottom: 0.8rem; }
         .dia-info { color: #4A6FA5; font-size: 0.8rem; margin-bottom: 1rem; }
-        .paso-card { background: #0D0D0D; border-radius: 24px; padding: 1.5rem; border: 1px solid #2A2A2A; }
-        .paso-contador { color: #4A6FA5; font-size: 0.7rem; margin-bottom: 0.5rem; }
-        .paso-texto { color: #EAEAEA; font-size: 1.1rem; margin-bottom: 1rem; }
-        .frase-animo { color: #E6C200; font-size: 0.8rem; margin-bottom: 1rem; font-style: italic; background: rgba(230,194,0,0.05); padding: 0.5rem; border-radius: 20px; }
-        .btn-principal { background: linear-gradient(90deg, #E6C200 0%, #D4B000 100%); border: none; color: #111; padding: 0.7rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 0.5rem; border-radius: 40px; }
-        .btn-secundario { background: transparent; border: 1px solid #808080; color: #CCC; padding: 0.6rem; font-size: 0.85rem; cursor: pointer; width: 100%; margin-top: 0.5rem; border-radius: 40px; }
-        .btn-atras { background: transparent; border: 1px solid #2A2A2A; color: #808080; padding: 0.6rem; font-size: 0.8rem; cursor: pointer; width: auto; margin-top: 0.5rem; border-radius: 40px; }
+        
+        /* ===== PASOS RESALTADOS ===== */
+        .paso-card {
+            background: #0D0D0D;
+            border-radius: 24px;
+            padding: 1.8rem;
+            border: 2px solid #E6C200;
+            box-shadow: 0 0 15px rgba(230, 194, 0, 0.4);
+            animation: respiro 2s infinite ease-in-out;
+        }
+        
+        @keyframes respiro {
+            0%, 100% { box-shadow: 0 0 10px rgba(230, 194, 0, 0.2); border-color: #E6C200; }
+            50% { box-shadow: 0 0 25px rgba(230, 194, 0, 0.7); border-color: #FFD700; }
+        }
+        
+        .paso-contador {
+            color: #E6C200;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            letter-spacing: 2px;
+            background: rgba(230, 194, 0, 0.1);
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .paso-texto {
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 8px #E6C200;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+        
+        .frase-animo {
+            color: #E6C200;
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            font-style: italic;
+            background: rgba(230,194,0,0.1);
+            padding: 0.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .btn-principal {
+            background: linear-gradient(90deg, #E6C200 0%, #FFD700 100%);
+            border: none;
+            color: #111;
+            padding: 0.8rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+            border-radius: 40px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(230, 194, 0, 0.3);
+        }
+        
+        .btn-principal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(230,194,0,0.5);
+        }
+        
+        .btn-secundario {
+            background: transparent;
+            border: 1px solid #808080;
+            color: #CCC;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+            border-radius: 40px;
+        }
+        .btn-atras {
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #808080;
+            padding: 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: auto;
+            margin-top: 0.5rem;
+            border-radius: 40px;
+        }
         .btn-atras:hover, .btn-secundario:hover { border-color: #E6C200; color: #E6C200; }
-        .btn-principal:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230,194,0,0.3); }
         .mensaje-motivacion { background: linear-gradient(135deg, rgba(230,194,0,0.15), rgba(230,194,0,0.05)); border: 1px solid #E6C200; border-radius: 20px; padding: 0.8rem; margin-top: 1rem; color: #E6C200; font-size: 0.8rem; }
         .check-flotante { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 4rem; animation: floatCheck 0.6s ease forwards; pointer-events: none; z-index: 1000; }
         @keyframes floatCheck { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); } 30% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%,-100%) scale(1); } }
@@ -249,7 +332,6 @@ function iniciarRecordatorio() {
                 Notification.requestPermission();
             }
             
-            // ===== PROGRAMAR LA NOTIFICACIÓN =====
             const ahora = new Date();
             const [horas, minutos] = nuevaHora.split(':');
             const horaProgramada = new Date();
@@ -302,7 +384,7 @@ function iniciarRecordatorio() {
         function actualizar() {
             const container = document.getElementById('pasoContainer');
             if (pasoActual >= pasos.length) {
-                container.innerHTML = `<div class="paso-card"><div class="paso-texto">🎯 Ritmo completado!</div><button class="btn-principal" id="btnCompletar">✅ COMPLETAR DÍA ${diaActual}</button></div>`;
+                container.innerHTML = `<div class="paso-card"><div class="paso-texto">🎯 ¡RITMO COMPLETADO!</div><button class="btn-principal" id="btnCompletar">✅ COMPLETAR DÍA ${diaActual}</button></div>`;
                 document.getElementById('btnCompletar').onclick = () => {
                     conducta.diasCompletados.push(diaActual);
                     localStorage.setItem('faro_pacto', JSON.stringify(pacto));
@@ -312,7 +394,7 @@ function iniciarRecordatorio() {
                     window.location.href = 'ritmo.html';
                 };
             } else {
-                container.innerHTML = `<div class="paso-card"><div class="paso-contador">PASO ${pasoActual+1} DE ${pasos.length}</div><div class="paso-texto">${pasos[pasoActual]}</div><div class="frase-animo">✨ ${frasesAnimo[pasoActual % frasesAnimo.length]}</div><button class="btn-principal" id="btnSiguiente">✅ COMPLETAR PASO</button><button class="btn-secundario" id="btnSaltar">⏸️ SALTAR HOY</button></div>`;
+                container.innerHTML = `<div class="paso-card"><div class="paso-contador">🔥 PASO ${pasoActual+1} DE ${pasos.length}</div><div class="paso-texto">${pasos[pasoActual]}</div><div class="frase-animo">✨ ${frasesAnimo[pasoActual % frasesAnimo.length]}</div><button class="btn-principal" id="btnSiguiente">✅ COMPLETAR PASO</button><button class="btn-secundario" id="btnSaltar">⏸️ SALTAR HOY</button></div>`;
                 document.getElementById('btnSiguiente').onclick = () => { pasoActual++; localStorage.setItem(`progreso_${conducta.id}_${diaActual}`, pasoActual); showCheckAnimation(); actualizar(); };
                 document.getElementById('btnSaltar').onclick = () => { if(confirm('¿Saltar hoy?')){ localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`); window.location.href = 'ritmo.html'; } };
             }
