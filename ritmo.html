@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FARO - Ritmo</title>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+            font-family: system-ui, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container { text-align: center; max-width: 450px; width: 100%; }
+        
+        .selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1rem;
+            background: rgba(30,30,30,0.5);
+            padding: 0.5rem;
+            border-radius: 50px;
+        }
+        .btn-conducta {
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #CCCCCC;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .btn-conducta.activa {
+            border-color: #E6C200;
+            color: #E6C200;
+            background: rgba(230,194,0,0.1);
+        }
+        .ritmo-card {
+            background: linear-gradient(145deg, #1A1A1A 0%, #151515 100%);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(230,194,0,0.15);
+        }
+        .conducta {
+            color: #E6C200;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .faro-animado { font-size: 1.8rem; animation: faroPulse 2s infinite; display: inline-block; }
+        @keyframes faroPulse {
+            0%,100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 10px #E6C200; }
+        }
+        .racha { color: #E69500; font-size: 0.75rem; background: rgba(230,149,0,0.15); display: inline-block; padding: 0.2rem 1rem; border-radius: 30px; margin-bottom: 0.8rem; }
+        .dia-info { color: #4A6FA5; font-size: 0.8rem; margin-bottom: 1rem; }
+        .paso-card { background: #0D0D0D; border-radius: 24px; padding: 1.5rem; border: 1px solid #2A2A2A; }
+        .paso-contador { color: #4A6FA5; font-size: 0.7rem; margin-bottom: 0.5rem; }
+        .paso-texto { color: #EAEAEA; font-size: 1.1rem; margin-bottom: 1rem; }
+        .frase-animo { color: #E6C200; font-size: 0.8rem; margin-bottom: 1rem; font-style: italic; background: rgba(230,194,0,0.05); padding: 0.5rem; border-radius: 20px; }
+        .btn-principal { background: linear-gradient(90deg, #E6C200 0%, #D4B000 100%); border: none; color: #111; padding: 0.7rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 0.5rem; border-radius: 40px; }
+        .btn-secundario { background: transparent; border: 1px solid #808080; color: #CCC; padding: 0.6rem; font-size: 0.85rem; cursor: pointer; width: 100%; margin-top: 0.5rem; border-radius: 40px; }
+        .btn-atras { background: transparent; border: 1px solid #2A2A2A; color: #808080; padding: 0.6rem; font-size: 0.8rem; cursor: pointer; width: auto; margin-top: 0.5rem; border-radius: 40px; }
+        .btn-atras:hover, .btn-secundario:hover { border-color: #E6C200; color: #E6C200; }
+        .btn-principal:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230,194,0,0.3); }
+        .mensaje-motivacion { background: linear-gradient(135deg, rgba(230,194,0,0.15), rgba(230,194,0,0.05)); border: 1px solid #E6C200; border-radius: 20px; padding: 0.8rem; margin-top: 1rem; color: #E6C200; font-size: 0.8rem; }
+        .check-flotante { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 4rem; animation: floatCheck 0.6s ease forwards; pointer-events: none; z-index: 1000; }
+        @keyframes floatCheck { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); } 30% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%,-100%) scale(1); } }
+        .estrellas { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 5rem; animation: estrellasBrillan 0.8s ease forwards; pointer-events: none; z-index: 1000; }
+        @keyframes estrellasBrillan { 0% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.3); text-shadow: 0 0 30px gold; } 100% { opacity: 0; transform: scale(1); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="selector" id="selector"></div>
+    <div class="ritmo-card">
+        <div class="conducta"><span class="faro-animado">🕯️</span> <span id="conductaTexto"></span></div>
+        <div class="racha" id="racha"></div>
+        <div class="dia-info" id="diaInfo"></div>
+        <div id="pasoContainer"></div>
+    </div>
+    <button class="btn-atras" id="btnAtras">← VOLVER</button>
+
+    <!-- RECORDATORIO DIARIO -->
+    <div style="margin-top: 1rem; padding: 0.8rem; background: #0D0D0D; border-radius: 20px; border: 1px solid #2A2A2A;">
+        <div style="color: #E6C200; font-size: 0.8rem; margin-bottom: 0.5rem;">⏰ Recordatorio diario</div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+            <input type="time" id="horaRecordatorio" style="background: #1A1A1A; border: 1px solid #2A2A2A; color: #CCCCCC; padding: 0.3rem; border-radius: 20px;">
+            <button id="btnGuardarRecordatorio" style="width: auto; padding: 0.3rem 1rem; margin-top: 0;">Guardar</button>
+        </div>
+        <div id="recordatorioEstado" style="color: #808080; font-size: 0.7rem; margin-top: 0.5rem;"></div>
+    </div>
+</div>
+
+<script>
+    const frasesAnimo = ["🌈 ¡Primer paso!", "💪 Sigue así", "🌟 Cada paso cuenta", "🔥 Más cerca", "🌱 Pequeños pasos", "💫 No pares", "⭐ Importante", "🎯 Buen camino", "💚 Se nota", "✨ Último empujón!"];
+    const mensajesMotivacion = ["🎉 Día completado! ⭐", "🌟 Lo lograste! 🔥", "💪 Más fuerte!", "🌱 Un día más", "🔥 Racha increíble", "⭐ Brillando", "💫 Misión cumplida", "🌈 Sigues pintando"];
+
+    const pasosPorConducta = {
+        comer: ["🌬️ Respira hondo", "👀 Mira lo que tienes", "🍽️ Elige algo", "🍳 Prepara el plato", "📵 Sin distracciones", "😋 Primer bocado", "🦷 Mastica", "💧 Bebe agua", "😌 Disfruta", "🏆 Reconócete"],
+        dormir: ["📱 Apaga pantallas", "💧 Agua tibia", "🧘 Estírate", "🛌 Acuéstate", "💡 Apaga luz", "😌 Cierra ojos", "🌬️ Respira 5 veces", "🧘 Relaja cuerpo", "⏰ Si no duermes, levántate", "😴 Vuelve a la cama"],
+        higiene: ["🚪 Entra al baño", "💧 Abre grifo", "😌 Mójate cara", "🧼 Jabón en manos", "⏱️ Lávate 20 seg", "💧 Enjuaga", "🧻 Sécate", "🪥 Cepíllate", "💧 Enjuaga cepillo", "✨ Siéntete limpio"],
+        salir: ["👕 Ropa cómoda", "👟 Ponte zapatos", "🔑 Coge llaves", "🚪 Abre puerta", "👀 Asoma 5 seg", "🌞 Sal al exterior", "🌬️ Respira", "🚶 Camina 1 min", "🪞 Mírate al volver", "🏆 Enfrentaste el exterior"],
+        movimiento: ["🧘 Ponte de pie", "🙆‍♂️ Estira brazos", "🦵 Estira piernas", "💪 Gira hombros", "🧘 Inclínate lado", "🧘 Inclínate otro", "🚶 5 pasos adelante", "🚶 5 pasos atrás", "💪 Estira cuello", "🪑 Siéntate"],
+        contacto: ["📱 Abre mensajes", "👀 Lee un mensaje", "👤 Elige persona", "💬 Escribe 'hola'", "⏳ Espera 1 min", "🤔 ¿Lo envío?", "📨 Envía", "💾 Guarda borrador", "📱 Cierra app", "🌬️ Respira"],
+        consumo: ["⏸️ Para 1 min", "💧 Bebe agua", "🤔 ¿Necesidad o impulso?", "⏳ Espera 5 min", "🧘 Respira", "💊 Toma mitad", "📝 Registra", "💚 No te juzgues", "🌱 Alternativa mañana", "✨ Sigue"],
+        pantallas: ["⏲️ Temporizador 15 min", "📱 Usa normal", "🔔 ¿Sigo por gusto?", "⏸️ Apaga 1 min", "🧘 Mira ventana", "🤔 ¿Seguir?", "⏲️ +10 min", "🖐️ Levántate", "🪴 Toca algo físico", "🌬️ Respira"],
+        compras: ["🛑 Cierra pestaña", "⏳ Espera 2 min", "🤔 ¿Lo necesito?", "⭐ Favoritos", "📅 Espera 24h", "💰 ¿Versión barata?", "💚 Cómpralo sin culpa", "📊 Registra", "🌱 Agradece", "✨ Decisión consciente"],
+        higiene_extrema: ["🛑 Detente", "⏲️ 5 min", "🧼 Solo 5 min", "🔔 Para", "🚪 Sal del baño", "🖐️ Toca algo", "🌬️ Respira", "💚 'Está bien así'", "🪞 Sonríe", "✨ Suficiente"],
+        trabajo: ["📋 Lista 3 tareas", "⏲️ Elige la más fácil", "🧘 Siéntate", "📵 Apaga móvil", "⏱️ 5 min", "✅ Completa", "🎉 Celebra", "📝 Siguiente tarea", "💪 Continúa", "🏆 Venciste procrastinación"],
+        meditacion: ["🧘 Siéntate", "😌 Cierra ojos", "🌬️ Respira 3 veces", "👂 Escucha", "🌬️ Siente respiración", "💭 Observa pensamientos", "🕯️ Vuelve a respiración", "⏱️ 2 min atención", "🙏 Agradece", "✨ Abre ojos"],
+        orden: ["👀 Mira entorno", "📦 Recoge algo", "🗑️ Tira basura", "🧹 Limpia superficie", "📚 Ordena estante", "👕 Dobla prenda", "🧽 Limpia polvo", "🗄️ Cada cosa en su lugar", "🌬️ Respira", "🏆 Mejoraste espacio"]
+    };
+
+    let pacto = JSON.parse(localStorage.getItem('faro_pacto'));
+    if (!pacto || !pacto.conductasActivas.length) window.location.href = 'index.html';
+    let conductaIndex = 0;
+    const selector = document.getElementById('selector');
+
+    function getConducta() { return pacto.conductasActivas[conductaIndex]; }
+    function calcularDia(c) {
+        const inicio = new Date(c.fechaInicio);
+        const hoy = new Date();
+        const diff = Math.floor((hoy - inicio) / (86400000));
+        let dia = diff + 1;
+        if (dia < 1) dia = 1;
+        if (dia > 7) dia = 7;
+        return dia;
+    }
+    function calcularRacha() {
+        const comp = getConducta().diasCompletados || [];
+        let r = 0;
+        for (let i = 1; i <= 7; i++) if (comp.includes(i)) r++; else break;
+        return r;
+    }
+
+    function renderizarSelector() {
+        selector.innerHTML = '';
+        pacto.conductasActivas.forEach((c, i) => {
+            const btn = document.createElement('button');
+            btn.textContent = `${c.emoji} ${c.nombre}`;
+            btn.className = `btn-conducta ${i === conductaIndex ? 'activa' : ''}`;
+            btn.onclick = () => { conductaIndex = i; window.location.href = 'ritmo.html'; };
+            selector.appendChild(btn);
+        });
+        const btnAgregar = document.createElement('button');
+        btnAgregar.textContent = '+ Agregar';
+        btnAgregar.className = 'btn-conducta';
+        btnAgregar.onclick = () => { window.location.href = 'seleccion.html?modo=añadir'; };
+        selector.appendChild(btnAgregar);
+        const btnComunidad = document.createElement('button');
+        btnComunidad.textContent = '🌱 Comunidad';
+        btnComunidad.className = 'btn-conducta';
+        btnComunidad.onclick = () => { window.location.href = 'comunidad.html'; };
+        selector.appendChild(btnComunidad);
+        const btnExportar = document.createElement('button');
+        btnExportar.textContent = '📥 Exportar';
+        btnExportar.className = 'btn-conducta';
+        btnExportar.onclick = () => { exportarHistorial(); };
+        selector.appendChild(btnExportar);
+    }
+
+    function showCheckAnimation() { let d = document.createElement('div'); d.className = 'check-flotante'; d.innerHTML = '✅'; document.body.appendChild(d); setTimeout(() => d.remove(), 600); }
+    function showStarsAnimation() { let d = document.createElement('div'); d.className = 'estrellas'; d.innerHTML = '⭐✨🌟'; document.body.appendChild(d); setTimeout(() => d.remove(), 800); }
+
+    function exportarHistorial() {
+        const mensajes = JSON.parse(localStorage.getItem('comunidad_mensajes_corazones')) || [];
+        const miId = localStorage.getItem('faro_intro_id') || 'anónimo';
+        const historial = { fecha: new Date().toISOString(), version: "FARO 2.0", introId: miId, conductas: pacto.conductasActivas, mensajes: mensajes.slice(0, 20) };
+        const blob = new Blob([JSON.stringify(historial, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `faro_historial_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        alert('📥 Historial exportado');
+    }
+
+    // ========== RECORDATORIO DIARIO ==========
+    function enviarNotificacion() {
+        const mensajeDiv = document.createElement('div');
+        mensajeDiv.style.position = 'fixed';
+        mensajeDiv.style.bottom = '20px';
+        mensajeDiv.style.right = '20px';
+        mensajeDiv.style.zIndex = '2000';
+        mensajeDiv.style.maxWidth = '300px';
+        mensajeDiv.style.cursor = 'pointer';
+        mensajeDiv.style.backgroundColor = '#1A1A1A';
+        mensajeDiv.style.border = '2px solid #E6C200';
+        mensajeDiv.style.borderRadius = '20px';
+        mensajeDiv.style.padding = '0.8rem';
+        mensajeDiv.style.color = '#E6C200';
+        mensajeDiv.style.fontSize = '0.9rem';
+        mensajeDiv.style.textAlign = 'center';
+        mensajeDiv.innerHTML = '🌱 "Obrar es crecer"<br><small>Haz clic para tu ritmo diario</small>';
+        document.body.appendChild(mensajeDiv);
+        
+        mensajeDiv.onclick = function() {
+            window.location.href = 'ritmo.html';
+        };
+        
+        setTimeout(function() {
+            if (mensajeDiv.parentNode) {
+                mensajeDiv.parentNode.removeChild(mensajeDiv);
+            }
+        }, 15000);
+        
+        if (Notification.permission === 'granted') {
+            new Notification('🌱 FARO - Recordatorio', {
+                body: '⚡ Obrar es crecer. Da tu paso de hoy.'
+            });
+        }
+    }
+
+function iniciarRecordatorio() {
+    const estadoDiv = document.getElementById('recordatorioEstado');
+    if (!estadoDiv) return;
+    
+    const horaGuardada = localStorage.getItem('faro_hora_recordatorio');
+    const horaInput = document.getElementById('horaRecordatorio');
+    
+    if (horaGuardada && horaInput) {
+        horaInput.value = horaGuardada;
+        estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + horaGuardada;
+    } else {
+        estadoDiv.innerHTML = '⏰ Establece una hora para recibir recordatorios';
+    }
+    
+    const btnGuardar = document.getElementById('btnGuardarRecordatorio');
+    if (btnGuardar) {
+        btnGuardar.onclick = function() {
+            const nuevaHora = document.getElementById('horaRecordatorio').value;
+            if (!nuevaHora) { alert('Elige una hora'); return; }
+            
+            localStorage.setItem('faro_hora_recordatorio', nuevaHora);
+            estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + nuevaHora;
+            
+            if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                Notification.requestPermission();
+            }
+            
+            // ===== PROGRAMAR LA NOTIFICACIÓN =====
+            const ahora = new Date();
+            const [horas, minutos] = nuevaHora.split(':');
+            const horaProgramada = new Date();
+            horaProgramada.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+            
+            if (horaProgramada <= ahora) {
+                horaProgramada.setDate(horaProgramada.getDate() + 1);
+            }
+            
+            const tiempoEspera = horaProgramada - ahora;
+            
+            if (window.temporizadorRecordatorio) {
+                clearTimeout(window.temporizadorRecordatorio);
+            }
+            
+            window.temporizadorRecordatorio = setTimeout(function() {
+                enviarNotificacion();
+            }, tiempoEspera);
+            
+            const minutosEspera = Math.round(tiempoEspera / 60000);
+            alert('Recordatorio guardado para las ' + nuevaHora + '. Te avisaré en ' + minutosEspera + ' minutos.');
+        };
+    }
+}
+    function pedirPermisoNotificaciones() {
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+
+    renderizarSelector();
+    const conducta = getConducta();
+    document.getElementById('conductaTexto').innerHTML = `${conducta.emoji} ${conducta.nombre}`;
+    const racha = calcularRacha();
+    document.getElementById('racha').innerHTML = racha > 0 ? `🔥 Racha: ${racha} día${racha > 1 ? 's' : ''}` : '🌱 Empieza tu racha';
+    const diaActual = calcularDia(conducta);
+    const completados = conducta.diasCompletados || [];
+    const yaCompleto = completados.includes(diaActual);
+    
+    if (yaCompleto) {
+        document.getElementById('diaInfo').innerHTML = `📅 Día ${diaActual} de 7 ✅`;
+        document.getElementById('pasoContainer').innerHTML = `<div class="paso-card">✨ Completado hoy.<div class="mensaje-motivacion">🏆 ${mensajesMotivacion[Math.floor(Math.random()*mensajesMotivacion.length)]}</div></div>`;
+    } else {
+        document.getElementById('diaInfo').innerHTML = `📅 Día ${diaActual} de 7`;
+        let pasos = pasosPorConducta[conducta.id] || pasosPorConducta.comer;
+        let pasoActual = 0;
+        let progreso = localStorage.getItem(`progreso_${conducta.id}_${diaActual}`);
+        if (progreso) pasoActual = parseInt(progreso);
+        
+        function actualizar() {
+            const container = document.getElementById('pasoContainer');
+            if (pasoActual >= pasos.length) {
+                container.innerHTML = `<div class="paso-card"><div class="paso-texto">🎯 Ritmo completado!</div><button class="btn-principal" id="btnCompletar">✅ COMPLETAR DÍA ${diaActual}</button></div>`;
+                document.getElementById('btnCompletar').onclick = () => {
+                    conducta.diasCompletados.push(diaActual);
+                    localStorage.setItem('faro_pacto', JSON.stringify(pacto));
+                    localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`);
+                    showStarsAnimation();
+                    alert(`🌟 ¡DÍA ${diaActual} COMPLETADO!`);
+                    window.location.href = 'ritmo.html';
+                };
+            } else {
+                container.innerHTML = `<div class="paso-card"><div class="paso-contador">PASO ${pasoActual+1} DE ${pasos.length}</div><div class="paso-texto">${pasos[pasoActual]}</div><div class="frase-animo">✨ ${frasesAnimo[pasoActual % frasesAnimo.length]}</div><button class="btn-principal" id="btnSiguiente">✅ COMPLETAR PASO</button><button class="btn-secundario" id="btnSaltar">⏸️ SALTAR HOY</button></div>`;
+                document.getElementById('btnSiguiente').onclick = () => { pasoActual++; localStorage.setItem(`progreso_${conducta.id}_${diaActual}`, pasoActual); showCheckAnimation(); actualizar(); };
+                document.getElementById('btnSaltar').onclick = () => { if(confirm('¿Saltar hoy?')){ localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`); window.location.href = 'ritmo.html'; } };
+            }
+        }
+        actualizar();
+    }
+    
+    document.getElementById('btnAtras').onclick = () => { window.location.href = 'pacto.html'; };
+    
+    iniciarRecordatorio();
+    pedirPermisoNotificaciones();
+</script>
+</body>
+</html>

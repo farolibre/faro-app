@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FARO - Elegir conducta</title>
+    <style>
+        body {
+            background-color: #111111;
+            font-family: system-ui, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #E6C200;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .subtitulo {
+            color: #808080;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        .tarjeta {
+            border: 1px solid #2A2A2A;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tarjeta:hover, .tarjeta.seleccionada {
+            border-color: #E6C200;
+            background-color: rgba(230,194,0,0.1);
+        }
+        .emoji {
+            font-size: 2rem;
+            display: block;
+        }
+        .nombre {
+            color: #CCCCCC;
+            font-size: 0.8rem;
+        }
+        button {
+            background: transparent;
+            border: 1px solid #808080;
+            color: #808080;
+            padding: 0.8rem;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:enabled {
+            border-color: #E6C200;
+            color: #E6C200;
+        }
+        .btn-atras {
+            border: none;
+            color: #808080;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🌱 ¿Qué quieres regular?</h1>
+    <div class="subtitulo">Elige una conducta para empezar</div>
+    <div class="grid" id="grid"></div>
+    <button id="btnContinuar" disabled>CONTINUAR</button>
+    <button class="btn-atras" id="btnAtras">← VOLVER</button>
+</div>
+<script>
+    // Lista de conductas disponibles
+    const conductas = [
+        { id: 'comer', emoji: '🍽️', nombre: 'Comer' },
+        { id: 'dormir', emoji: '🌙', nombre: 'Dormir' },
+        { id: 'higiene', emoji: '🚿', nombre: 'Higiene' },
+        { id: 'salir', emoji: '🚪', nombre: 'Salir de casa' },
+        { id: 'movimiento', emoji: '🚶', nombre: 'Movimiento' },
+        { id: 'contacto', emoji: '💬', nombre: 'Contacto social' },
+        { id: 'consumo', emoji: '🍷', nombre: 'Consumo' },
+        { id: 'pantallas', emoji: '📱', nombre: 'Pantallas' },
+        { id: 'compras', emoji: '🛍️', nombre: 'Compras' },
+        { id: 'higiene_extrema', emoji: '🧼', nombre: 'Higiene extrema' },
+        { id: 'trabajo', emoji: '💼', nombre: 'Trabajo/Estudio' },
+        { id: 'meditacion', emoji: '🧘', nombre: 'Meditación' },
+        { id: 'orden', emoji: '🧹', nombre: 'Orden/Limpieza' }
+    ];
+    
+    let seleccionada = null;
+    const grid = document.getElementById('grid');
+    
+    // Crear tarjetas para cada conducta
+    conductas.forEach(c => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'tarjeta';
+        tarjeta.innerHTML = `<span class="emoji">${c.emoji}</span><span class="nombre">${c.nombre}</span>`;
+        
+        tarjeta.onclick = () => {
+            // Quitar selección de todas
+            document.querySelectorAll('.tarjeta').forEach(t => t.classList.remove('seleccionada'));
+            // Seleccionar esta
+            tarjeta.classList.add('seleccionada');
+            seleccionada = c;
+            document.getElementById('btnContinuar').disabled = false;
+            // Guardar en localStorage
+            localStorage.setItem('conducta_elegida', JSON.stringify(c));
+        };
+        
+        grid.appendChild(tarjeta);
+    });
+    
+    // Botón CONTINUAR
+    document.getElementById('btnContinuar').onclick = () => {
+        if (seleccionada) {
+            window.location.href = 'pacto.html';
+        }
+    };
+    
+    // Botón VOLVER
+    document.getElementById('btnAtras').onclick = () => {
+        window.location.href = 'index.html';
+    };
+</script>
+</body>
+</html>

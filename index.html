@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FARO - Bienvenida</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .faro {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: faroPulse 2s infinite;
+            display: inline-block;
+        }
+        @keyframes faroPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); text-shadow: 0 0 0px #E6C200; }
+            50% { opacity: 1; transform: scale(1.08); text-shadow: 0 0 20px #E6C200; }
+        }
+        h1 {
+            color: #E6C200;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+        }
+        p {
+            color: #808080;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        .frase {
+            color: #4A6FA5;
+            font-size: 0.8rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+        button {
+            background: transparent;
+            border: 2px solid #E6C200;
+            color: #E6C200;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #E6C200;
+            color: #111111;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230,194,0,0.3);
+        }
+        .apoyo {
+            margin-top: 2.5rem;
+            border-top: 1px solid #2A2A2A;
+            padding-top: 1.5rem;
+        }
+        .apoyo-texto {
+            color: #808080;
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+        }
+        .apoyo-enlace {
+            color: #E6C200;
+            text-decoration: none;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .apoyo-enlace:hover {
+            opacity: 1;
+        }
+        .creador {
+            color: #4A6FA5;
+            font-size: 0.6rem;
+            margin-top: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="faro">🕯️</div>
+    <h1>FARO</h1>
+    
+    <p>No es una terapia.</p>
+    <p>No es un diario.</p>
+    <p>Es una linterna.</p>
+    <p>Para cuando estás a oscuras.</p>
+    
+    <div class="frase">"Obrar es crecer"</div>
+    
+    <button id="btnEmpezar">ENCENDER FARO</button>
+    
+    <div class="apoyo">
+        <div class="apoyo-texto">FARO es y será siempre libre, anónimo y sin condiciones</div>
+        <a href="https://ko-fi.com/faro20" target="_blank" class="apoyo-enlace">
+            ☕ Si FARO te ayuda, invítame a un café
+        </a>
+        <div class="creador">Creado con ❤️ para introexploradores</div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('btnEmpezar').onclick = () => {
+        window.location.href = 'seleccion.html';
+    };
+</script>
+</body>
+</html>

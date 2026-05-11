@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FARO - Mi progreso</title>
+    <style>
+        body {
+            background-color: #111111;
+            font-family: system-ui, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #E6C200;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .btn-conducta {
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #CCCCCC;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .btn-conducta.activa {
+            border-color: #E6C200;
+            color: #E6C200;
+            background-color: rgba(230,194,0,0.1);
+        }
+        .progreso-card {
+            background-color: #1A1A1A;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .conducta-titulo {
+            font-size: 1.3rem;
+            color: #E6C200;
+            margin-bottom: 1rem;
+        }
+        .dias-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+        .dia {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            background-color: #2A2A2A;
+            color: #808080;
+        }
+        .dia.completado {
+            background-color: #4A6FA5;
+            color: white;
+        }
+        .dia.actual {
+            border: 2px solid #E6C200;
+            background-color: rgba(230,194,0,0.1);
+            color: #E6C200;
+        }
+        .dia.futuro {
+            opacity: 0.5;
+        }
+        .info {
+            color: #808080;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+        button {
+            background: transparent;
+            border: 1px solid #E6C200;
+            color: #E6C200;
+            padding: 0.8rem;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #E6C200;
+            color: #111111;
+        }
+        .btn-atras {
+            background: transparent;
+            border: 1px solid #808080;
+            color: #808080;
+        }
+        .btn-atras:hover {
+            background-color: #808080;
+            color: #111111;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📊 Mi progreso</h1>
+    
+    <div class="selector" id="selectorConductas"></div>
+    
+    <div id="progresoContainer"></div>
+    
+    <button id="btnVolver" class="btn-atras">← VOLVER AL RITMO</button>
+</div>
+
+<script>
+    const pacto = JSON.parse(localStorage.getItem('faro_pacto'));
+    if (!pacto || !pacto.conductasActivas || pacto.conductasActivas.length === 0) {
+        alert('No hay pacto activo');
+        window.location.href = 'index.html';
+    }
+
+    let conductaIndex = 0;
+
+    function calcularDia(conducta) {
+        const inicio = new Date(conducta.fechaInicio);
+        const hoy = new Date();
+        const diff = Math.floor((hoy - inicio) / (1000 * 60 * 60 * 24));
+        let dia = diff + 1;
+        if (dia < 1) dia = 1;
+        if (dia > 7) dia = 7;
+        return dia;
+    }
+
+    function renderizarSelector() {
+        const selector = document.getElementById('selectorConductas');
+        selector.innerHTML = '';
+        pacto.conductasActivas.forEach((c, idx) => {
+            const btn = document.createElement('button');
+            btn.textContent = `${c.emoji} ${c.nombre}`;
+            btn.className = `btn-conducta ${idx === conductaIndex ? 'activa' : ''}`;
+            btn.onclick = () => {
+                conductaIndex = idx;
+                renderizarProgreso();
+                renderizarSelector();
+            };
+            selector.appendChild(btn);
+        });
+        const btnAgregar = document.createElement('button');
+        btnAgregar.textContent = '+ Agregar';
+        btnAgregar.className = 'btn-conducta';
+        btnAgregar.onclick = () => {
+            window.location.href = 'seleccion.html?modo=añadir';
+        };
+        selector.appendChild(btnAgregar);
+    }
+
+    function renderizarProgreso() {
+        const conducta = pacto.conductasActivas[conductaIndex];
+        const diaActual = calcularDia(conducta);
+        const completados = conducta.diasCompletados || [];
+        const fechaInicio = new Date(conducta.fechaInicio);
+        const fechaInicioStr = fechaInicio.toLocaleDateString();
+        
+        let html = `
+            <div class="progreso-card">
+                <div class="conducta-titulo">${conducta.emoji} ${conducta.nombre}</div>
+                <div class="dias-grid" id="diasGrid"></div>
+                <div class="info">
+                    Inicio: ${fechaInicioStr}<br>
+                    Completados: ${completados.length} de 7 días
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('progresoContainer').innerHTML = html;
+        
+        const grid = document.getElementById('diasGrid');
+        for (let i = 1; i <= 7; i++) {
+            const dia = document.createElement('div');
+            dia.className = 'dia';
+            
+            if (completados.includes(i)) {
+                dia.classList.add('completado');
+                dia.textContent = '✓';
+            } else if (i === diaActual) {
+                dia.classList.add('actual');
+                dia.textContent = i;
+            } else if (i < diaActual) {
+                dia.classList.add('futuro');
+                dia.textContent = '○';
+            } else {
+                dia.classList.add('futuro');
+                dia.textContent = i;
+            }
+            
+            grid.appendChild(dia);
+        }
+    }
+
+    renderizarSelector();
+    renderizarProgreso();
+    
+    document.getElementById('btnVolver').onclick = () => {
+        window.location.href = 'ritmo.html';
+    };
+</script>
+</body>
+</html>
