@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>FARO - Ritmo (Nueva versión)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
+            font-family: system-ui, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Selector de conductas */
+        .selector {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: rgba(30, 30, 30, 0.6);
+            padding: 0.8rem;
+            border-radius: 50px;
+        }
+
+        .btn-conducta {
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #CCCCCC;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-conducta.activa {
+            border-color: #E6C200;
+            color: #E6C200;
+            background: rgba(230, 194, 0, 0.1);
+        }
+
+        /* Tarjeta principal */
+        .ritmo-card {
+            background: linear-gradient(145deg, #1A1A1A 0%, #151515 100%);
+            border-radius: 32px;
+            padding: 2rem;
+            border: 1px solid rgba(230, 194, 0, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .conducta {
+            color: #E6C200;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .racha {
+            color: #E69500;
+            font-size: 0.8rem;
+            background: rgba(230, 149, 0, 0.15);
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            margin-bottom: 1rem;
+        }
+
+        .paso-card {
+            background: #0D0D0D;
+            border-radius: 28px;
+            padding: 2rem;
+            border: 2px solid #E6C200;
+            box-shadow: 0 0 15px rgba(230, 194, 0, 0.3);
+            margin-top: 1rem;
+        }
+
+        .paso-contador {
+            color: #E6C200;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .paso-texto {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .frase-animo {
+            color: #E6C200;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        button {
+            background: linear-gradient(90deg, #E6C200 0%, #FFD700 100%);
+            border: none;
+            color: #111;
+            padding: 0.8rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 40px;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            transform: scale(0.98);
+        }
+
+        .btn-secundario {
+            background: transparent;
+            border: 1px solid #808080;
+            color: #CCC;
+        }
+
+        .btn-atras {
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #808080;
+            width: auto;
+            padding: 0.5rem 1.2rem;
+        }
+
+        .check-flotante {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            animation: floatCheck 0.6s ease forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes floatCheck {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+
+            30% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -100%) scale(1);
+            }
+        }
+
+        .estrellas {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            animation: estrellasBrillan 0.8s ease forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes estrellasBrillan {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.3);
+                text-shadow: 0 0 30px gold;
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Selector de conductas -->
+        <div class="selector" id="selector"></div>
+
+        <div class="ritmo-card">
+            <div class="conducta">
+                <span>🕯️</span>
+                <span id="conductaTexto"></span>
+            </div>
+            <div class="racha" id="racha"></div>
+            <div id="pasoContainer"></div>
+        </div>
+
+        <button class="btn-atras" id="btnVolver">← VOLVER A PACTOS</button>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN DE CONDUCTAS Y PASOS
+        // ==========================================
+        const conductasDisponibles = [
+            { id: "comer", nombre: "Comer", emoji: "🍽️" },
+            { id: "dormir", nombre: "Dormir", emoji: "😴" },
+            { id: "higiene", nombre: "Higiene", emoji: "🚿" },
+            { id: "salir", nombre: "Salir de casa", emoji: "🚪" },
+            { id: "movimiento", nombre: "Movimiento", emoji: "💪" },
+            { id: "contacto", nombre: "Contacto social", emoji: "💬" },
+            { id: "consumo", nombre: "Consumo", emoji: "🍷" },
+            { id: "pantallas", nombre: "Pantallas", emoji: "📱" },
+            { id: "compras", nombre: "Compras", emoji: "🛍️" },
+            { id: "higieneExtrema", nombre: "Higiene extrema", emoji: "🧼" }
+        ];
+
+        const pasosPorConducta = {
+            comer: ["🌬️ Respira hondo", "👀 Mira lo que tienes", "🍽️ Elige algo", "🍳 Prepara el plato", "📵 Sin distracciones", "😋 Primer bocado", "🦷 Mastica", "💧 Bebe agua", "😌 Disfruta", "🏆 Reconócete"],
+            dormir: ["📱 Apaga pantallas", "💧 Agua tibia", "🧘 Estírate", "🛌 Acuéstate", "💡 Apaga luz", "😌 Cierra ojos", "🌬️ Respira 5 veces", "🧘 Relaja cuerpo", "⏰ Si no duermes, levántate", "😴 Vuelve a la cama"],
+            higiene: ["🚪 Entra al baño", "💧 Abre grifo", "😌 Mójate cara", "🧼 Jabón en manos", "⏱️ Lávate 20 seg", "💧 Enjuaga", "🧻 Sécate", "🪥 Cepíllate", "💧 Enjuaga cepillo", "✨ Siéntete limpio"],
+            salir: ["👕 Ropa cómoda", "👟 Ponte zapatos", "🔑 Coge llaves", "🚪 Abre puerta", "👀 Asoma 5 seg", "🌞 Sal al exterior", "🌬️ Respira", "🚶 Camina 1 min", "🪞 Mírate al volver", "🏆 Enfrentaste el exterior"],
+            movimiento: ["🧘 Ponte de pie", "🙆‍♂️ Estira brazos", "🦵 Estira piernas", "💪 Gira hombros", "🧘 Inclínate lado", "🧘 Inclínate otro", "🚶 5 pasos adelante", "🚶 5 pasos atrás", "💪 Estira cuello", "🪑 Siéntate"],
+            contacto: ["📱 Abre mensajes", "👀 Lee un mensaje", "👤 Elige persona", "💬 Escribe 'hola'", "⏳ Espera 1 min", "🤔 ¿Lo envío?", "📨 Envía", "💾 Guarda borrador", "📱 Cierra app", "🌬️ Respira"],
+            consumo: ["⏸️ Para 1 min", "💧 Bebe agua", "🤔 ¿Necesidad o impulso?", "⏳ Espera 5 min", "🧘 Respira", "💊 Toma mitad", "📝 Registra", "💚 No te juzgues", "🌱 Alternativa mañana", "✨ Sigue"],
+            pantallas: ["⏲️ Temporizador 15 min", "📱 Usa normal", "🔔 ¿Sigo por gusto?", "⏸️ Apaga 1 min", "🧘 Mira ventana", "🤔 ¿Seguir?", "⏲️ +10 min", "🖐️ Levántate", "🪴 Toca algo físico", "🌬️ Respira"],
+            compras: ["🛑 Cierra pestaña", "⏳ Espera 2 min", "🤔 ¿Lo necesito?", "⭐ Favoritos", "📅 Espera 24h", "💰 ¿Versión barata?", "💚 Cómpralo sin culpa", "📊 Registra", "🌱 Agradece", "✨ Decisión consciente"],
+            higieneExtrema: ["🛑 Detente", "⏲️ 5 min", "🧼 Solo 5 min", "🔔 Para", "🚪 Sal del baño", "🖐️ Toca algo", "🌬️ Respira", "💚 'Está bien así'", "🪞 Sonríe", "✨ Suficiente"]
+        };
+
+        // Frases y mensajes
+        const frasesAnimo = ["🌈 ¡Primer paso!", "💪 Sigue así", "🌟 Cada paso cuenta", "🔥 Más cerca", "🌱 Pequeños pasos", "💫 No pares", "⭐ Importante", "🎯 Buen camino", "💚 Se nota", "✨ Último empujón!"];
+        const mensajesMotivacion = ["🎉 Día completado! ⭐", "🌟 Lo lograste! 🔥", "💪 Más fuerte!", "🌱 Un día más", "🔥 Racha increíble", "⭐ Brillando", "💫 Misión cumplida", "🌈 Sigues pintando"];
+
+        // ==========================================
+        // FUNCIONES PRINCIPALES (NUEVAS Y LIMPIAS)
+        // ==========================================
+        function getFechaHoy() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // Obtener el estado por conducta (NUEVA ESTRUCTURA LIMPIA)
+        function obtenerEstadoCompletado() {
+            const estado = localStorage.getItem('faro_estado_por_conducta');
+            return estado ? JSON.parse(estado) : {};
+        }
+
+        function guardarEstadoCompletado(estado) {
+            localStorage.setItem('faro_estado_por_conducta', JSON.stringify(estado));
+        }
+
+        function estaCompletadoHoy(conductaId) {
+            const hoy = getFechaHoy();
+            const estado = obtenerEstadoCompletado();
+            return estado[conductaId] === hoy;
+        }
+
+        function marcarCompletadoHoy(conductaId) {
+            const hoy = getFechaHoy();
+            const estado = obtenerEstadoCompletado();
+            estado[conductaId] = hoy;
+            guardarEstadoCompletado(estado);
+        }
+
+        // Obtener el progreso de los pasos
+        function obtenerProgresoPaso(conductaId, fecha) {
+            const key = `progreso_${conductaId}_${fecha}`;
+            const progreso = localStorage.getItem(key);
+            return progreso ? parseInt(progreso) : 0;
+        }
+
+        function guardarProgresoPaso(conductaId, fecha, pasoActual) {
+            const key = `progreso_${conductaId}_${fecha}`;
+            localStorage.setItem(key, pasoActual);
+        }
+
+        function eliminarProgreso(conductaId, fecha) {
+            const key = `progreso_${conductaId}_${fecha}`;
+            localStorage.removeItem(key);
+        }
+
+        // ==========================================
+        // LÓGICA DE LA APLICACIÓN
+        // ==========================================
+        let conductaActualId = "comer"; // ID por defecto
+        let pasoActual = 0;
+        let pasos = [];
+
+        // Cargar el pacto existente
+        let pacto = JSON.parse(localStorage.getItem('faro_pacto_nuevo'));
+        if (!pacto || !pacto.conductasActivas) {
+            // Inicializar con algunas conductas por defecto
+            pacto = {
+                conductasActivas: [
+                    { id: "comer", nombre: "Comer", emoji: "🍽️", fechaInicio: new Date().toISOString() },
+                    { id: "dormir", nombre: "Dormir", emoji: "😴", fechaInicio: new Date().toISOString() },
+                    { id: "consumo", nombre: "Consumo", emoji: "🍷", fechaInicio: new Date().toISOString() }
+                ]
+            };
+            localStorage.setItem('faro_pacto_nuevo', JSON.stringify(pacto));
+        }
+
+        function getConductaActual() {
+            return pacto.conductasActivas.find(c => c.id === conductaActualId) || pacto.conductasActivas[0];
+        }
+
+        function renderizarSelector() {
+            const selectorDiv = document.getElementById('selector');
+            selectorDiv.innerHTML = '';
+            pacto.conductasActivas.forEach(conducta => {
+                const btn = document.createElement('button');
+                btn.textContent = `${conducta.emoji} ${conducta.nombre}`;
+                btn.className = `btn-conducta ${conducta.id === conductaActualId ? 'activa' : ''}`;
+                btn.onclick = () => {
+                    conductaActualId = conducta.id;
+                    renderizarTodo();
+                };
+                selectorDiv.appendChild(btn);
+            });
+
+            // Botón para agregar más conductas
+            const btnAgregar = document.createElement('button');
+            btnAgregar.textContent = '+ Agregar';
+            btnAgregar.className = 'btn-conducta';
+            btnAgregar.onclick = () => {
+                window.location.href = 'seleccion.html';
+            };
+            selectorDiv.appendChild(btnAgregar);
+        }
+
+        function showCheckAnimation() {
+            let d = document.createElement('div');
+            d.className = 'check-flotante';
+            d.innerHTML = '✅';
+            document.body.appendChild(d);
+            setTimeout(() => d.remove(), 600);
+        }
+
+        function showStarsAnimation() {
+            let d = document.createElement('div');
+            d.className = 'estrellas';
+            d.innerHTML = '⭐✨🌟';
+            document.body.appendChild(d);
+            setTimeout(() => d.remove(), 800);
+        }
+
+        function actualizarPasos() {
+            const container = document.getElementById('pasoContainer');
+            const conducta = getConductaActual();
+            const completadoHoy = estaCompletadoHoy(conducta.id);
+            const hoy = getFechaHoy();
+
+            if (completadoHoy) {
+                container.innerHTML = `
+                    <div class="paso-card">
+                        ✨ Completado hoy.
+                        <div class="mensaje-motivacion">🏆 ${mensajesMotivacion[Math.floor(Math.random() * mensajesMotivacion.length)]}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Si no está completado, mostrar los pasos
+            const progresoActual = obtenerProgresoPaso(conducta.id, hoy);
+            pasoActual = progresoActual;
+            pasos = pasosPorConducta[conducta.id] || pasosPorConducta.comer;
+
+            if (pasoActual >= pasos.length) {
+                // Todos los pasos completados, mostrar botón de finalizar
+                container.innerHTML = `
+                    <div class="paso-card">
+                        <div class="paso-texto">🎯 ¡RITMO COMPLETADO!</div>
+                        <button id="btnCompletarDia">✅ COMPLETAR HOY</button>
+                    </div>
+                `;
+                document.getElementById('btnCompletarDia').onclick = () => {
+                    marcarCompletadoHoy(conducta.id);
+                    eliminarProgreso(conducta.id, hoy);
+                    showStarsAnimation();
+                    alert(`🌟 ¡Día completado para ${conducta.nombre}!`);
+                    renderizarTodo();
+                };
+            } else {
+                // Mostrar el paso actual
+                container.innerHTML = `
+                    <div class="paso-card">
+                        <div class="paso-contador">🔥 PASO ${pasoActual + 1} DE ${pasos.length}</div>
+                        <div class="paso-texto">${pasos[pasoActual]}</div>
+                        <div class="frase-animo">✨ ${frasesAnimo[pasoActual % frasesAnimo.length]}</div>
+                        <button id="btnSiguientePaso">✅ COMPLETAR PASO</button>
+                        <button id="btnSaltarDia" class="btn-secundario">⏸️ SALTAR HOY</button>
+                    </div>
+                `;
+                document.getElementById('btnSiguientePaso').onclick = () => {
+                    pasoActual++;
+                    guardarProgresoPaso(conducta.id, hoy, pasoActual);
+                    showCheckAnimation();
+                    actualizarPasos();
+                };
+                document.getElementById('btnSaltarDia').onclick = () => {
+                    if (confirm('¿Saltar hoy? No perderás progreso, pero tendrás que empezar de nuevo mañana.')) {
+                        eliminarProgreso(conducta.id, hoy);
+                        renderizarTodo();
+                    }
+                };
+            }
+        }
+
+        function renderizarTodo() {
+            const conducta = getConductaActual();
+            document.getElementById('conductaTexto').innerHTML = `${conducta.emoji} ${conducta.nombre}`;
+            
+            // Calcular racha (simplificada)
+            const rachaElement = document.getElementById('racha');
+            rachaElement.innerHTML = '🌱 Tu ritmo diario';
+            
+            actualizarPasos();
+        }
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        renderizarSelector();
+        renderizarTodo();
+
+        document.getElementById('btnVolver').onclick = () => {
+            window.location.href = 'pacto.html';
+        };
+    </script>
+</body>
+</html>
