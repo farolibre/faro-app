@@ -376,16 +376,12 @@
             const hoy = getFechaHoy();
 
             if (completadoHoy) {
-             container.innerHTML = `
-    <div class="paso-card">
-        <div style="color: #E6C200; font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">
-            ✨ ¡COMPLETADO HOY!
-        </div>
-        <div class="mensaje-motivacion" style="color: #E6C200; background: rgba(230,194,0,0.1);">
-            🏆 ${mensajesMotivacion[Math.floor(Math.random() * mensajesMotivacion.length)]}
-        </div>
-    </div>
-`;
+                container.innerHTML = `
+                    <div class="paso-card">
+                        ✨ Completado hoy.
+                        <div class="mensaje-motivacion">🏆 ${mensajesMotivacion[Math.floor(Math.random() * mensajesMotivacion.length)]}</div>
+                    </div>
+                `;
                 return;
             }
 
