@@ -1,3 +1,81 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>FARO - Tu pacto</title>
+    <style>
+        body {
+            background-color: #111111;
+            font-family: system-ui, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 2rem;
+        }
+        h1 {
+            color: #E6C200;
+            font-size: 1.5rem;
+        }
+        .resumen {
+            border: 1px solid #E6C200;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .emoji-grande {
+            font-size: 3rem;
+            display: block;
+        }
+        .conducta-nombre {
+            font-size: 1.8rem;
+            color: #E6C200;
+        }
+        .regla {
+            color: #808080;
+            font-size: 0.9rem;
+            margin: 2rem 0;
+        }
+        button {
+            background: transparent;
+            border: 1px solid #E6C200;
+            color: #E6C200;
+            padding: 0.8rem;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        button:hover {
+            background-color: #E6C200;
+            color: #111111;
+        }
+        .btn-rechazar {
+            border-color: #808080;
+            color: #808080;
+        }
+        .btn-atras {
+            border: none;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tu pacto</h1>
+        <div class="resumen" id="resumen"></div>
+        <div class="regla">Activa el ritmo una vez al día. No hace falta que lo completes.</div>
+        <button id="btnAceptar">ACEPTAR PACTO</button>
+        <button id="btnRechazar" class="btn-rechazar">RECHAZAR</button>
+        <br>
+        <button class="btn-atras" id="btnAtras">← volver</button>
+    </div>
+
+    <script>
         const conducta = JSON.parse(localStorage.getItem('conducta_elegida'));
         if (!conducta) {
             alert('No hay conducta seleccionada');
@@ -10,43 +88,40 @@
         `;
 
         document.getElementById('btnAceptar').onclick = function() {
-            // Obtener el pacto existente si lo hay
-            let pacto = JSON.parse(localStorage.getItem('faro_pacto'));
+            // Recuperar el pacto existente (si hay)
+            const pactoExistente = JSON.parse(localStorage.getItem('faro_pacto'));
             
-            // Intentar conservar los días ya completados si esta conducta ya existía
+            // Buscar si esta conducta ya tenía días completados
             let diasCompletadosPrevios = [];
-            let fechasPrevias = [];
+            let fechasCompletadasPrevias = [];
             
-            if (pacto && pacto.conductasActivas) {
-                const conductaExistente = pacto.conductasActivas.find(c => c.id === conducta.id);
+            if (pactoExistente && pactoExistente.conductasActivas) {
+                const conductaExistente = pactoExistente.conductasActivas.find(c => c.id === conducta.id);
                 if (conductaExistente) {
                     diasCompletadosPrevios = conductaExistente.diasCompletados || [];
-                    fechasPrevias = conductaExistente.diasCompletadosFecha || [];
+                    fechasCompletadasPrevias = conductaExistente.diasCompletadosFecha || [];
+                    console.log("📌 Recuperados días previos:", diasCompletadosPrevios);
+                    console.log("📌 Recuperadas fechas previas:", fechasCompletadasPrevias);
                 }
             }
             
+            // Crear la nueva conducta con los datos preservados
             const nuevaConducta = {
                 id: conducta.id,
                 nombre: conducta.nombre,
                 emoji: conducta.emoji,
                 fechaInicio: new Date().toISOString(),
                 diasCompletados: diasCompletadosPrevios,
-                diasCompletadosFecha: fechasPrevias
+                diasCompletadosFecha: fechasCompletadasPrevias  // ← CLAVE: guardar las fechas
             };
             
-            // Actualizar o crear el pacto
-            if (!pacto) {
-                pacto = { conductasActivas: [nuevaConducta] };
-            } else {
-                const indiceExistente = pacto.conductasActivas.findIndex(c => c.id === conducta.id);
-                if (indiceExistente !== -1) {
-                    pacto.conductasActivas[indiceExistente] = nuevaConducta;
-                } else {
-                    pacto.conductasActivas.push(nuevaConducta);
-                }
-            }
+            // Guardar el pacto
+            const nuevoPacto = {
+                conductasActivas: [nuevaConducta]
+            };
             
-            localStorage.setItem('faro_pacto', JSON.stringify(pacto));
+            localStorage.setItem('faro_pacto', JSON.stringify(nuevoPacto));
+            console.log("💾 Pacto guardado con fechas:", fechasCompletadasPrevias);
             alert(`¡Pacto activado para ${conducta.nombre}!`);
             window.location.href = 'ritmo.html';
         };
@@ -60,3 +135,6 @@
         document.getElementById('btnAtras').onclick = function() {
             window.location.href = 'seleccion.html';
         };
+    </script>
+</body>
+</html>  
