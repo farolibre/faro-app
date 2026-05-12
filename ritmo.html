@@ -65,7 +65,6 @@
         .racha { color: #E69500; font-size: 0.75rem; background: rgba(230,149,0,0.15); display: inline-block; padding: 0.2rem 1rem; border-radius: 30px; margin-bottom: 0.8rem; }
         .dia-info { color: #4A6FA5; font-size: 0.8rem; margin-bottom: 1rem; }
         
-        /* ===== PASOS RESALTADOS ===== */
         .paso-card {
             background: #0D0D0D;
             border-radius: 24px;
@@ -205,14 +204,25 @@
         orden: ["👀 Mira entorno", "📦 Recoge algo", "🗑️ Tira basura", "🧹 Limpia superficie", "📚 Ordena estante", "👕 Dobla prenda", "🧽 Limpia polvo", "🗄️ Cada cosa en su lugar", "🌬️ Respira", "🏆 Mejoraste espacio"]
     };
 
-    let pacto = JSON.parse(localStorage.getItem('faro_pacto'));
-    if (!pacto || !pacto.conductasActivas.length) window.location.href = 'index.html';
-    let conductaIndex = 0;
-    const selector = document.getElementById('selector');
-
-    function getConducta() { return pacto.conductasActivas[conductaIndex]; }
-    function calcularDia(c) {
-        const inicio = new Date(c.fechaInicio);
+    // ========== FUNCIONES DE UTILIDAD ==========
+    function obtenerFechaActual() {
+        return new Date().toISOString().split('T')[0];
+    }
+    
+    function cargarPacto() {
+        return JSON.parse(localStorage.getItem('faro_pacto'));
+    }
+    
+    function guardarPacto(pacto) {
+        localStorage.setItem('faro_pacto', JSON.stringify(pacto));
+    }
+    
+    function getConductaActual(pacto, index) {
+        return pacto.conductasActivas[index];
+    }
+    
+    function calcularDia(fechaInicio) {
+        const inicio = new Date(fechaInicio);
         const hoy = new Date();
         const diff = Math.floor((hoy - inicio) / (86400000));
         let dia = diff + 1;
@@ -220,16 +230,37 @@
         if (dia > 7) dia = 7;
         return dia;
     }
-    function calcularRacha() {
-        const comp = getConducta().diasCompletados || [];
+    
+    function calcularRacha(conducta) {
+        const comp = conducta.diasCompletados || [];
         let r = 0;
         for (let i = 1; i <= 7; i++) if (comp.includes(i)) r++; else break;
         return r;
     }
-
+    
+    function yaCompletoHoy(conducta, diaActual) {
+        const completados = conducta.diasCompletados || [];
+        return completados.includes(diaActual);
+    }
+    
+    // ========== RENDERIZADO ==========
+    let pacto = cargarPacto();
+    if (!pacto || !pacto.conductasActivos || pacto.conductasActivos.length === 0) {
+        // Compatibilidad con estructura antigua
+        if (pacto && pacto.conductasActivas) {
+            pacto.conductasActivos = pacto.conductasActivas;
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+    
+    let conductaIndex = 0;
+    const selector = document.getElementById('selector');
+    
     function renderizarSelector() {
+        const conductas = pacto.conductasActivos || pacto.conductasActivas;
         selector.innerHTML = '';
-        pacto.conductasActivas.forEach((c, i) => {
+        conductas.forEach((c, i) => {
             const btn = document.createElement('button');
             btn.textContent = `${c.emoji} ${c.nombre}`;
             btn.className = `btn-conducta ${i === conductaIndex ? 'activa' : ''}`;
@@ -252,14 +283,11 @@
         btnExportar.onclick = () => { exportarHistorial(); };
         selector.appendChild(btnExportar);
     }
-
-    function showCheckAnimation() { let d = document.createElement('div'); d.className = 'check-flotante'; d.innerHTML = '✅'; document.body.appendChild(d); setTimeout(() => d.remove(), 600); }
-    function showStarsAnimation() { let d = document.createElement('div'); d.className = 'estrellas'; d.innerHTML = '⭐✨🌟'; document.body.appendChild(d); setTimeout(() => d.remove(), 800); }
-
+    
     function exportarHistorial() {
         const mensajes = JSON.parse(localStorage.getItem('comunidad_mensajes_corazones')) || [];
         const miId = localStorage.getItem('faro_intro_id') || 'anónimo';
-        const historial = { fecha: new Date().toISOString(), version: "FARO 2.0", introId: miId, conductas: pacto.conductasActivas, mensajes: mensajes.slice(0, 20) };
+        const historial = { fecha: new Date().toISOString(), version: "FARO 2.0", introId: miId, conductas: pacto.conductasActivos || pacto.conductasActivas, mensajes: mensajes.slice(0, 20) };
         const blob = new Blob([JSON.stringify(historial, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -268,8 +296,11 @@
         URL.revokeObjectURL(a.href);
         alert('📥 Historial exportado');
     }
-
-    // ========== RECORDATORIO DIARIO ==========
+    
+    function showCheckAnimation() { let d = document.createElement('div'); d.className = 'check-flotante'; d.innerHTML = '✅'; document.body.appendChild(d); setTimeout(() => d.remove(), 600); }
+    function showStarsAnimation() { let d = document.createElement('div'); d.className = 'estrellas'; d.innerHTML = '⭐✨🌟'; document.body.appendChild(d); setTimeout(() => d.remove(), 800); }
+    
+    // ========== RECORDATORIO ==========
     function enviarNotificacion() {
         const mensajeDiv = document.createElement('div');
         mensajeDiv.style.position = 'fixed';
@@ -304,74 +335,82 @@
             });
         }
     }
-
-function iniciarRecordatorio() {
-    const estadoDiv = document.getElementById('recordatorioEstado');
-    if (!estadoDiv) return;
     
-    const horaGuardada = localStorage.getItem('faro_hora_recordatorio');
-    const horaInput = document.getElementById('horaRecordatorio');
-    
-    if (horaGuardada && horaInput) {
-        horaInput.value = horaGuardada;
-        estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + horaGuardada;
-    } else {
-        estadoDiv.innerHTML = '⏰ Establece una hora para recibir recordatorios';
+    function iniciarRecordatorio() {
+        const estadoDiv = document.getElementById('recordatorioEstado');
+        if (!estadoDiv) return;
+        
+        const horaGuardada = localStorage.getItem('faro_hora_recordatorio');
+        const horaInput = document.getElementById('horaRecordatorio');
+        
+        if (horaGuardada && horaInput) {
+            horaInput.value = horaGuardada;
+            estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + horaGuardada;
+        } else {
+            estadoDiv.innerHTML = '⏰ Establece una hora para recibir recordatorios';
+        }
+        
+        const btnGuardar = document.getElementById('btnGuardarRecordatorio');
+        if (btnGuardar) {
+            btnGuardar.onclick = function() {
+                const nuevaHora = document.getElementById('horaRecordatorio').value;
+                if (!nuevaHora) { alert('Elige una hora'); return; }
+                
+                localStorage.setItem('faro_hora_recordatorio', nuevaHora);
+                estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + nuevaHora;
+                
+                if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+                
+                const ahora = new Date();
+                const [horas, minutos] = nuevaHora.split(':');
+                const horaProgramada = new Date();
+                horaProgramada.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+                
+                if (horaProgramada <= ahora) {
+                    horaProgramada.setDate(horaProgramada.getDate() + 1);
+                }
+                
+                const tiempoEspera = horaProgramada - ahora;
+                
+                if (window.temporizadorRecordatorio) {
+                    clearTimeout(window.temporizadorRecordatorio);
+                }
+                
+                window.temporizadorRecordatorio = setTimeout(function() {
+                    enviarNotificacion();
+                }, tiempoEspera);
+                
+                const minutosEspera = Math.round(tiempoEspera / 60000);
+                alert('Recordatorio guardado para las ' + nuevaHora + '. Te avisaré en ' + minutosEspera + ' minutos.');
+            };
+        }
     }
     
-    const btnGuardar = document.getElementById('btnGuardarRecordatorio');
-    if (btnGuardar) {
-        btnGuardar.onclick = function() {
-            const nuevaHora = document.getElementById('horaRecordatorio').value;
-            if (!nuevaHora) { alert('Elige una hora'); return; }
-            
-            localStorage.setItem('faro_hora_recordatorio', nuevaHora);
-            estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + nuevaHora;
-            
-            if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-                Notification.requestPermission();
-            }
-            
-            const ahora = new Date();
-            const [horas, minutos] = nuevaHora.split(':');
-            const horaProgramada = new Date();
-            horaProgramada.setHours(parseInt(horas), parseInt(minutos), 0, 0);
-            
-            if (horaProgramada <= ahora) {
-                horaProgramada.setDate(horaProgramada.getDate() + 1);
-            }
-            
-            const tiempoEspera = horaProgramada - ahora;
-            
-            if (window.temporizadorRecordatorio) {
-                clearTimeout(window.temporizadorRecordatorio);
-            }
-            
-            window.temporizadorRecordatorio = setTimeout(function() {
-                enviarNotificacion();
-            }, tiempoEspera);
-            
-            const minutosEspera = Math.round(tiempoEspera / 60000);
-            alert('Recordatorio guardado para las ' + nuevaHora + '. Te avisaré en ' + minutosEspera + ' minutos.');
-        };
-    }
-}
     function pedirPermisoNotificaciones() {
         if (Notification.permission === 'default') {
             Notification.requestPermission();
         }
     }
-
-    renderizarSelector();
-    const conducta = getConducta();
-    document.getElementById('conductaTexto').innerHTML = `${conducta.emoji} ${conducta.nombre}`;
-    const racha = calcularRacha();
-    document.getElementById('racha').innerHTML = racha > 0 ? `🔥 Racha: ${racha} día${racha > 1 ? 's' : ''}` : '🌱 Empieza tu racha';
-    const diaActual = calcularDia(conducta);
-    const completados = conducta.diasCompletados || [];
-    const yaCompleto = completados.includes(diaActual);
     
-    if (yaCompleto) {
+    // ========== LÓGICA PRINCIPAL CON VALIDACIÓN ==========
+    renderizarSelector();
+    
+    // Asegurar estructura
+    if (!pacto.conductasActivos && pacto.conductasActivas) {
+        pacto.conductasActivos = pacto.conductasActivas;
+    }
+    
+    const conducta = pacto.conductasActivos[conductaIndex];
+    document.getElementById('conductaTexto').innerHTML = `${conducta.emoji} ${conducta.nombre}`;
+    const racha = calcularRacha(conducta);
+    document.getElementById('racha').innerHTML = racha > 0 ? `🔥 Racha: ${racha} día${racha > 1 ? 's' : ''}` : '🌱 Empieza tu racha';
+    
+    const diaActual = calcularDia(conducta.fechaInicio);
+    const completado = yaCompletoHoy(conducta, diaActual);
+    
+    if (completado) {
         document.getElementById('diaInfo').innerHTML = `📅 Día ${diaActual} de 7 ✅`;
         document.getElementById('pasoContainer').innerHTML = `<div class="paso-card">✨ Completado hoy.<div class="mensaje-motivacion">🏆 ${mensajesMotivacion[Math.floor(Math.random()*mensajesMotivacion.length)]}</div></div>`;
     } else {
@@ -385,9 +424,23 @@ function iniciarRecordatorio() {
             const container = document.getElementById('pasoContainer');
             if (pasoActual >= pasos.length) {
                 container.innerHTML = `<div class="paso-card"><div class="paso-texto">🎯 ¡RITMO COMPLETADO!</div><button class="btn-principal" id="btnCompletar">✅ COMPLETAR DÍA ${diaActual}</button></div>`;
+                
                 document.getElementById('btnCompletar').onclick = () => {
-                    conducta.diasCompletados.push(diaActual);
-                    localStorage.setItem('faro_pacto', JSON.stringify(pacto));
+                    // 🔐 VALIDACIÓN INFALIBLE
+                    const pactoActual = cargarPacto();
+                    const conductasArray = pactoActual.conductasActivos || pactoActual.conductasActivas;
+                    const conductaActualizada = conductasArray[conductaIndex];
+                    const completadosActualizados = conductaActualizada.diasCompletados || [];
+                    
+                    if (completadosActualizados.includes(diaActual)) {
+                        alert("⚠️ Hoy ya completaste este ritmo. ¡Vuelve mañana!");
+                        window.location.href = 'ritmo.html';
+                        return;
+                    }
+                    
+                    // Guardar el día
+                    conductaActualizada.diasCompletados.push(diaActual);
+                    guardarPacto(pactoActual);
                     localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`);
                     showStarsAnimation();
                     alert(`🌟 ¡DÍA ${diaActual} COMPLETADO!`);
@@ -395,8 +448,20 @@ function iniciarRecordatorio() {
                 };
             } else {
                 container.innerHTML = `<div class="paso-card"><div class="paso-contador">🔥 PASO ${pasoActual+1} DE ${pasos.length}</div><div class="paso-texto">${pasos[pasoActual]}</div><div class="frase-animo">✨ ${frasesAnimo[pasoActual % frasesAnimo.length]}</div><button class="btn-principal" id="btnSiguiente">✅ COMPLETAR PASO</button><button class="btn-secundario" id="btnSaltar">⏸️ SALTAR HOY</button></div>`;
-                document.getElementById('btnSiguiente').onclick = () => { pasoActual++; localStorage.setItem(`progreso_${conducta.id}_${diaActual}`, pasoActual); showCheckAnimation(); actualizar(); };
-                document.getElementById('btnSaltar').onclick = () => { if(confirm('¿Saltar hoy?')){ localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`); window.location.href = 'ritmo.html'; } };
+                
+                document.getElementById('btnSiguiente').onclick = () => { 
+                    pasoActual++; 
+                    localStorage.setItem(`progreso_${conducta.id}_${diaActual}`, pasoActual); 
+                    showCheckAnimation(); 
+                    actualizar(); 
+                };
+                
+                document.getElementById('btnSaltar').onclick = () => { 
+                    if(confirm('¿Saltar hoy? No perderás tu progreso, pero tendrás que empezar de nuevo mañana.')){ 
+                        localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`); 
+                        window.location.href = 'ritmo.html'; 
+                    } 
+                };
             }
         }
         actualizar();
