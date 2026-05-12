@@ -1,5 +1,4 @@
-
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>FARO - Ritmo</title>
@@ -185,7 +184,7 @@
 </div>
 
 <script>
-    const frasesAnimo = ["🌈 ¡Primer paso!", "💪 Sigue así", "🌟 Cada paso cuenta", "🔥 Más cerca", "🌱 Pequeños pasos", "💫 No pares", "⭐ Importante", "🎯 Buen camino", "💚 Se nota", "✨ Último empujón!"];
+     const frasesAnimo = ["🌈 ¡Primer paso!", "💪 Sigue así", "🌟 Cada paso cuenta", "🔥 Más cerca", "🌱 Pequeños pasos", "💫 No pares", "⭐ Importante", "🎯 Buen camino", "💚 Se nota", "✨ Último empujón!"];
     const mensajesMotivacion = ["🎉 Día completado! ⭐", "🌟 Lo lograste! 🔥", "💪 Más fuerte!", "🌱 Un día más", "🔥 Racha increíble", "⭐ Brillando", "💫 Misión cumplida", "🌈 Sigues pintando"];
 
     const pasosPorConducta = {
@@ -204,13 +203,37 @@
         orden: ["👀 Mira entorno", "📦 Recoge algo", "🗑️ Tira basura", "🧹 Limpia superficie", "📚 Ordena estante", "👕 Dobla prenda", "🧽 Limpia polvo", "🗄️ Cada cosa en su lugar", "🌬️ Respira", "🏆 Mejoraste espacio"]
     };
 
+    // ========== NUEVA ESTRATEGIA: USAR CLAVE INDEPENDIENTE ==========
+    // Esta clave NO es tocada por pacto.html
+    function obtenerEstadoDiario() {
+        const estado = localStorage.getItem('faro_estado_diario');
+        return estado ? JSON.parse(estado) : {};
+    }
+    
+    function guardarEstadoDiario(estado) {
+        localStorage.setItem('faro_estado_diario', JSON.stringify(estado));
+    }
+    
+    function yaCompletoHoy() {
+        const hoy = new Date().toISOString().split('T')[0];
+        const estado = obtenerEstadoDiario();
+        return estado[hoy] === true;
+    }
+    
+    function marcarCompletadoHoy() {
+        const hoy = new Date().toISOString().split('T')[0];
+        const estado = obtenerEstadoDiario();
+        estado[hoy] = true;
+        guardarEstadoDiario(estado);
+        console.log("✅ Día marcado como completado:", hoy);
+    }
+
     let pacto = JSON.parse(localStorage.getItem('faro_pacto'));
     if (!pacto || !pacto.conductasActivas.length) window.location.href = 'index.html';
     let conductaIndex = 0;
     const selector = document.getElementById('selector');
 
     function getConducta() { return pacto.conductasActivas[conductaIndex]; }
-    function getFechaHoy() { return new Date().toISOString().split('T')[0]; }
     
     function calcularDia(c) {
         const inicio = new Date(c.fechaInicio);
@@ -221,6 +244,7 @@
         if (dia > 7) dia = 7;
         return dia;
     }
+    
     function calcularRacha() {
         const comp = getConducta().diasCompletados || [];
         let r = 0;
@@ -306,57 +330,58 @@
         }
     }
 
-function iniciarRecordatorio() {
-    const estadoDiv = document.getElementById('recordatorioEstado');
-    if (!estadoDiv) return;
-    
-    const horaGuardada = localStorage.getItem('faro_hora_recordatorio');
-    const horaInput = document.getElementById('horaRecordatorio');
-    
-    if (horaGuardada && horaInput) {
-        horaInput.value = horaGuardada;
-        estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + horaGuardada;
-    } else {
-        estadoDiv.innerHTML = '⏰ Establece una hora para recibir recordatorios';
+    function iniciarRecordatorio() {
+        const estadoDiv = document.getElementById('recordatorioEstado');
+        if (!estadoDiv) return;
+        
+        const horaGuardada = localStorage.getItem('faro_hora_recordatorio');
+        const horaInput = document.getElementById('horaRecordatorio');
+        
+        if (horaGuardada && horaInput) {
+            horaInput.value = horaGuardada;
+            estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + horaGuardada;
+        } else {
+            estadoDiv.innerHTML = '⏰ Establece una hora para recibir recordatorios';
+        }
+        
+        const btnGuardar = document.getElementById('btnGuardarRecordatorio');
+        if (btnGuardar) {
+            btnGuardar.onclick = function() {
+                const nuevaHora = document.getElementById('horaRecordatorio').value;
+                if (!nuevaHora) { alert('Elige una hora'); return; }
+                
+                localStorage.setItem('faro_hora_recordatorio', nuevaHora);
+                estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + nuevaHora;
+                
+                if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+                
+                const ahora = new Date();
+                const [horas, minutos] = nuevaHora.split(':');
+                const horaProgramada = new Date();
+                horaProgramada.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+                
+                if (horaProgramada <= ahora) {
+                    horaProgramada.setDate(horaProgramada.getDate() + 1);
+                }
+                
+                const tiempoEspera = horaProgramada - ahora;
+                
+                if (window.temporizadorRecordatorio) {
+                    clearTimeout(window.temporizadorRecordatorio);
+                }
+                
+                window.temporizadorRecordatorio = setTimeout(function() {
+                    enviarNotificacion();
+                }, tiempoEspera);
+                
+                const minutosEspera = Math.round(tiempoEspera / 60000);
+                alert('Recordatorio guardado para las ' + nuevaHora + '. Te avisaré en ' + minutosEspera + ' minutos.');
+            };
+        }
     }
     
-    const btnGuardar = document.getElementById('btnGuardarRecordatorio');
-    if (btnGuardar) {
-        btnGuardar.onclick = function() {
-            const nuevaHora = document.getElementById('horaRecordatorio').value;
-            if (!nuevaHora) { alert('Elige una hora'); return; }
-            
-            localStorage.setItem('faro_hora_recordatorio', nuevaHora);
-            estadoDiv.innerHTML = '🔔 Recordatorio activo a las ' + nuevaHora;
-            
-            if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-                Notification.requestPermission();
-            }
-            
-            const ahora = new Date();
-            const [horas, minutos] = nuevaHora.split(':');
-            const horaProgramada = new Date();
-            horaProgramada.setHours(parseInt(horas), parseInt(minutos), 0, 0);
-            
-            if (horaProgramada <= ahora) {
-                horaProgramada.setDate(horaProgramada.getDate() + 1);
-            }
-            
-            const tiempoEspera = horaProgramada - ahora;
-            
-            if (window.temporizadorRecordatorio) {
-                clearTimeout(window.temporizadorRecordatorio);
-            }
-            
-            window.temporizadorRecordatorio = setTimeout(function() {
-                enviarNotificacion();
-            }, tiempoEspera);
-            
-            const minutosEspera = Math.round(tiempoEspera / 60000);
-            alert('Recordatorio guardado para las ' + nuevaHora + '. Te avisaré en ' + minutosEspera + ' minutos.');
-        };
-    }
-}
     function pedirPermisoNotificaciones() {
         if (Notification.permission === 'default') {
             Notification.requestPermission();
@@ -369,8 +394,9 @@ function iniciarRecordatorio() {
     const racha = calcularRacha();
     document.getElementById('racha').innerHTML = racha > 0 ? `🔥 Racha: ${racha} día${racha > 1 ? 's' : ''}` : '🌱 Empieza tu racha';
     const diaActual = calcularDia(conducta);
-    const completados = conducta.diasCompletados || [];
-    const yaCompleto = (conducta.diasCompletadosFecha || []).includes(getFechaHoy());
+    
+    // USAR LA NUEVA FUNCIÓN DE ESTADO INDEPENDIENTE
+    const yaCompleto = yaCompletoHoy();
     
     if (yaCompleto) {
         document.getElementById('diaInfo').innerHTML = `📅 Día ${diaActual} de 7 ✅`;
@@ -385,35 +411,49 @@ function iniciarRecordatorio() {
         function actualizar() {
             const container = document.getElementById('pasoContainer');
             if (pasoActual >= pasos.length) {
-                container.innerHTML = `<div class="paso-card"><div class="paso-texto">🎯 ¡RITMO COMPLETADO!</div><button class="btn-principal" id="btnCompletar">✅ COMPLETAR DÍA ${diaActual}</button></div>`;
+                container.innerHTML = `<div class="paso-card"><div class="paso-texto">🎯 ¡RITMO COMPLETADO!</div><button class="btn-principal" id="btnCompletar">✅ COMPLETAR HOY</button></div>`;
+                
                 document.getElementById('btnCompletar').onclick = () => {
-                    const pactoActual = JSON.parse(localStorage.getItem('faro_pacto'));
-                    const conductaActual = pactoActual.conductasActivas[conductaIndex];
-                    const hoyFecha = getFechaHoy();
-                    const fechasCompletadas = conductaActual.diasCompletadosFecha || [];
-                    
-                    if (fechasCompletadas.includes(hoyFecha)) {
+                    if (yaCompletoHoy()) {
                         alert("⚠️ Hoy ya completaste este ritmo. ¡Vuelve mañana!");
                         window.location.href = 'ritmo.html';
                         return;
                     }
                     
-                    fechasCompletadas.push(hoyFecha);
-                    conductaActual.diasCompletadosFecha = fechasCompletadas;
+                    // Marcar como completado en la clave independiente
+                    marcarCompletadoHoy();
                     
+                    // También guardar en el pacto por si acaso
+                    const pactoActual = JSON.parse(localStorage.getItem('faro_pacto'));
+                    const conductaActual = pactoActual.conductasActivas[conductaIndex];
+                    const hoyFecha = new Date().toISOString().split('T')[0];
+                    if (!conductaActual.diasCompletadosFecha) conductaActual.diasCompletadosFecha = [];
+                    conductaActual.diasCompletadosFecha.push(hoyFecha);
                     if (!conductaActual.diasCompletados) conductaActual.diasCompletados = [];
                     conductaActual.diasCompletados.push(diaActual);
-                    
                     localStorage.setItem('faro_pacto', JSON.stringify(pactoActual));
                     localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`);
+                    
                     showStarsAnimation();
-                    alert(`🌟 ¡DÍA ${diaActual} COMPLETADO (${hoyFecha})!`);
+                    alert(`🌟 ¡DÍA ${diaActual} COMPLETADO!`);
                     window.location.href = 'ritmo.html';
                 };
             } else {
                 container.innerHTML = `<div class="paso-card"><div class="paso-contador">🔥 PASO ${pasoActual+1} DE ${pasos.length}</div><div class="paso-texto">${pasos[pasoActual]}</div><div class="frase-animo">✨ ${frasesAnimo[pasoActual % frasesAnimo.length]}</div><button class="btn-principal" id="btnSiguiente">✅ COMPLETAR PASO</button><button class="btn-secundario" id="btnSaltar">⏸️ SALTAR HOY</button></div>`;
-                document.getElementById('btnSiguiente').onclick = () => { pasoActual++; localStorage.setItem(`progreso_${conducta.id}_${diaActual}`, pasoActual); showCheckAnimation(); actualizar(); };
-                document.getElementById('btnSaltar').onclick = () => { if(confirm('¿Saltar hoy?')){ localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`); window.location.href = 'ritmo.html'; } };
+                
+                document.getElementById('btnSiguiente').onclick = () => { 
+                    pasoActual++; 
+                    localStorage.setItem(`progreso_${conducta.id}_${diaActual}`, pasoActual); 
+                    showCheckAnimation(); 
+                    actualizar(); 
+                };
+                
+                document.getElementById('btnSaltar').onclick = () => { 
+                    if(confirm('¿Saltar hoy?')){ 
+                        localStorage.removeItem(`progreso_${conducta.id}_${diaActual}`); 
+                        window.location.href = 'ritmo.html'; 
+                    } 
+                };
             }
         }
         actualizar();
@@ -425,5 +465,4 @@ function iniciarRecordatorio() {
     pedirPermisoNotificaciones();
 </script>
 </body>
-</html> 
- 
+</html>
