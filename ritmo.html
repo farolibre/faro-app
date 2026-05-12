@@ -214,19 +214,20 @@
         localStorage.setItem('faro_estado_diario', JSON.stringify(estado));
     }
     
-    function yaCompletoHoy() {
-        const hoy = new Date().toISOString().split('T')[0];
-        const estado = obtenerEstadoDiario();
-        return estado[hoy] === true;
-    }
-    
-    function marcarCompletadoHoy() {
-        const hoy = new Date().toISOString().split('T')[0];
-        const estado = obtenerEstadoDiario();
-        estado[hoy] = true;
-        guardarEstadoDiario(estado);
-        console.log("✅ Día marcado como completado:", hoy);
-    }
+   function yaCompletoHoy() {
+    const hoy = new Date().toISOString().split('T')[0];
+    const conductaId = getConducta().id;
+    const estado = obtenerEstadoDiario();
+    return estado[`${conductaId}_${hoy}`] === true;
+}
+
+function marcarCompletadoHoy() {
+    const hoy = new Date().toISOString().split('T')[0];
+    const conductaId = getConducta().id;
+    const estado = obtenerEstadoDiario();
+    estado[`${conductaId}_${hoy}`] = true;
+    guardarEstadoDiario(estado);
+}
 
     let pacto = JSON.parse(localStorage.getItem('faro_pacto'));
     if (!pacto || !pacto.conductasActivas.length) window.location.href = 'index.html';
