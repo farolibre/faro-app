@@ -368,14 +368,43 @@
             localStorage.removeItem(STORAGE_KEYS.PROGRESO(conductaId, fecha));
         }
 
-        function cargarPacto() {
-            try {
-                const dato = localStorage.getItem(STORAGE_KEYS.PACTO);
-                pacto = dato ? JSON.parse(dato) : null;
-            } catch (e) {
-                console.error('Error al cargar pacto:', e);
-                pacto = null;
+      function cargarPacto() {
+    try {
+        const dato = localStorage.getItem(STORAGE_KEYS.PACTO);
+        pacto = dato ? JSON.parse(dato) : null;
+    } catch (e) {
+        console.error('Error al cargar pacto:', e);
+        pacto = null;
+    }
+
+    // Si no hay pacto o está vacío, inicializar con las primeras 3
+    if (!pacto || !Array.isArray(pacto.conductasActivas) || pacto.conductasActivas.length === 0) {
+        pacto = {
+            conductasActivas: conductasDisponibles.slice(0, 3).map(c => ({
+                ...c,
+                fechaInicio: new Date().toISOString()
+            }))
+        };
+    } else {
+        // ✅ NUEVO: Fusionar conductas nuevas con las ya guardadas
+        const idsActivas = new Set(pacto.conductasActivas.map(c => c.id));
+        conductasDisponibles.forEach(c => {
+            if (!idsActivas.has(c.id)) {
+                pacto.conductasActivas.push({ 
+                    ...c, 
+                    fechaInicio: new Date().toISOString() 
+                });
             }
+        });
+    }
+
+    // Guardar el pacto actualizado
+    try {
+        localStorage.setItem(STORAGE_KEYS.PACTO, JSON.stringify(pacto));
+    } catch (e) {
+        console.error('Error al guardar pacto:', e);
+    }
+}
 
             if (!pacto || !Array.isArray(pacto.conductasActivas) || pacto.conductasActivas.length === 0) {
                 pacto = {
