@@ -23,33 +23,38 @@
         }
         .container { text-align: center; max-width: 500px; width: 100%; }
         
-        /* Selector */
         .selector { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; background: rgba(20,20,20,0.8); padding: 0.8rem; border-radius: 50px; }
         .btn-conducta { background: transparent; border: 1px solid #333; color: #888; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
         .btn-conducta:hover { border-color: #555; }
         .btn-conducta.activo { border-color: var(--primary); color: var(--primary); background: rgba(230,194,0,0.1); box-shadow: 0 0 10px rgba(230,194,0,0.1); }
         
-        /* Tarjeta */
         .card { background: var(--card); border: 1px solid rgba(230,194,0,0.2); border-radius: 32px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .titulo-conducta { color: var(--primary); font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .estado { font-size: 0.8rem; color: #E69500; background: rgba(230,149,0,0.1); padding: 0.3rem 1rem; border-radius: 20px; display: inline-block; margin-bottom: 1.5rem; font-weight: 500; }
         
-        /* Pasos */
         .paso-box { background: #0D0D0D; border: 2px solid var(--primary); border-radius: 24px; padding: 2rem; margin-top: 1rem; box-shadow: 0 0 20px rgba(230,194,0,0.1); animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .paso-num { color: var(--primary); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 1px; font-weight: bold; }
-        .paso-txt { font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem; line-height: 1.3; }
+        .paso-txt { font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem; line-height: 1.3; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .frase { color: var(--primary); font-style: italic; margin-bottom: 2rem; opacity: 0.8; font-size: 0.9rem; }
         
-        /* Botones */
         .btn-main { background: linear-gradient(90deg, #E6C200 0%, #FFD700 100%); color: #111; border: none; padding: 1rem; width: 100%; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 0.8rem; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(230,194,0,0.3); }
         .btn-main:hover { transform: scale(0.98); }
         .btn-sec { background: transparent; border: 1px solid #555; color: #888; padding: 0.8rem; width: 100%; border-radius: 50px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
         .btn-sec:hover { border-color: #E6C200; color: #E6C200; }
         
-        /* Links inferiores */
-        .links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; }
+        .btn-voz {
+            background: transparent; border: 1px solid var(--primary); color: var(--primary);
+            padding: 0.5rem; border-radius: 50%; cursor: pointer; font-size: 1.2rem;
+            margin-left: 10px; transition: all 0.2s; width: 40px; height: 40px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-voz:hover { background: rgba(230,194,0,0.1); transform: scale(1.1); }
+        .btn-voz.hablando { background: var(--primary); color: #000; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        
+        .links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
         .btn-link { background: none; border: none; color: #555; cursor: pointer; text-decoration: underline; font-size: 0.8rem; padding: 0.5rem; }
         .btn-link:hover { color: var(--primary); }
     </style>
@@ -66,81 +71,75 @@
     </div>
 
     <div class="links">
-<button class="btn-link" onclick="window.location.href='seleccion.html'">🌱 Ajustar mis cuidados</button>
+        <button class="btn-link" onclick="window.location.href='seleccion.html'">🌱 Ajustar mis cuidados</button>
+        <button class="btn-link" onclick="window.location.href='comunidad.html'">💬 Comunidad</button>
         <button class="btn-link" onclick="resetApp()">🔄 Reiniciar todo</button>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // DATOS (20 Conductas Completas)
-    // ==========================================
     const INFO = {
         comer: { emoji: "🍽️", nombre: "Comer" }, dormir: { emoji: "😴", nombre: "Dormir" },
         higiene: { emoji: "🚿", nombre: "Higiene" }, salir: { emoji: "🚪", nombre: "Salir" },
         movimiento: { emoji: "💪", nombre: "Movimiento" }, contacto: { emoji: "💬", nombre: "Contacto social" },
         consumo: { emoji: "🍷", nombre: "Consumo" }, pantallas: { emoji: "📱", nombre: "Pantallas" },
         compras: { emoji: "🛍️", nombre: "Compras" }, higieneExtrema: { emoji: "🧼", nombre: "Higiene extrema" },
-        meditacion: { emoji: "", nombre: "Meditación" }, lectura: { emoji: "📚", nombre: "Lectura" },
+        meditacion: { emoji: "🧘", nombre: "Meditación" }, lectura: { emoji: "📚", nombre: "Lectura" },
         gratitud: { emoji: "🙏", nombre: "Gratitud" }, orden: { emoji: "🧹", nombre: "Orden" },
         creatividad: { emoji: "🎨", nombre: "Creatividad" }, naturaleza: { emoji: "🌿", nombre: "Naturaleza" },
         limites: { emoji: "🚧", nombre: "Límites" }, autocuidado: { emoji: "💆", nombre: "Autocuidado" },
-        aprendizaje: { emoji: "🎓", nombre: "Aprendizaje" }, silencio: { emoji: "", nombre: "Silencio digital" }
+        aprendizaje: { emoji: "🎓", nombre: "Aprendizaje" }, silencio: { emoji: "🔇", nombre: "Silencio digital" }
     };
 
     const PASOS = {
         comer: ["🌬️ Respira hondo","👀 Mira lo que tienes","🍽️ Elige algo","🍳 Prepara el plato","📵 Sin distracciones","😋 Primer bocado","🦷 Mastica","💧 Bebe agua","😌 Disfruta","🏆 Reconócete"],
-        dormir: ["📱 Apaga pantallas","💧 Agua tibia","🧘 Estírate","🛌 Acuéstate"," Apaga luz","😌 Cierra ojos","️ Respira 5 veces"," Relaja cuerpo","⏰ Si no duermes, levántate","😴 Vuelve a la cama"],
-        higiene: ["🚪 Entra al baño","💧 Abre grifo"," Mójate cara","🧼 Jabón en manos","⏱️ Lávate 20 seg","💧 Enjuaga","🧻 Sécate","🪥 Cepíllate"," Enjuaga cepillo","✨ Siéntete limpio"],
-        salir: ["👕 Ropa cómoda","👟 Ponte zapatos","🔑 Coge llaves","🚪 Abre puerta"," Asoma 5 seg","🌞 Sal al exterior","🌬️ Respira","🚶 Camina 1 min","🪞 Mírate al volver","🏆 Enfrentaste el exterior"],
-        movimiento: ["🧘 Ponte de pie","🙆‍♂️ Estira brazos","🦵 Estira piernas","💪 Gira hombros","🧘 Inclínate lado"," Inclínate otro","🚶 5 pasos adelante","🚶 5 pasos atrás"," Estira cuello","🪑 Siéntate"],
-        contacto: ["📱 Abre mensajes","👀 Lee un mensaje","👤 Elige persona","💬 Escribe 'hola'"," Espera 1 min","🤔 ¿Lo envío?","📨 Envía","💾 Guarda borrador","📱 Cierra app","️ Respira"],
-        consumo: ["️ Para 1 min","💧 Bebe agua","🤔 ¿Necesidad o impulso?","⏳ Espera 5 min","🧘 Respira","💊 Toma mitad","📝 Registra","💚 No te juzgues","🌱 Alternativa mañana","✨ Sigue"],
+        dormir: ["📱 Apaga pantallas","💧 Agua tibia","🧘 Estírate","🛌 Acuéstate","💡 Apaga luz","😌 Cierra ojos","🌬️ Respira 5 veces","🧘 Relaja cuerpo","⏰ Si no duermes, levántate","😴 Vuelve a la cama"],
+        higiene: ["🚪 Entra al baño","💧 Abre grifo","😌 Mójate cara","🧼 Jabón en manos","⏱️ Lávate 20 seg","💧 Enjuaga","🧻 Sécate","🪥 Cepíllate","💧 Enjuaga cepillo","✨ Siéntete limpio"],
+        salir: ["👕 Ropa cómoda","👟 Ponte zapatos","🔑 Coge llaves","🚪 Abre puerta","👀 Asoma 5 seg","🌞 Sal al exterior","🌬️ Respira","🚶 Camina 1 min","🪞 Mírate al volver","🏆 Enfrentaste el exterior"],
+        movimiento: ["🧘 Ponte de pie","🙆‍️ Estira brazos"," Estira piernas"," Gira hombros"," Inclínate lado"," Inclínate otro"," 5 pasos adelante"," 5 pasos atrás"," Estira cuello"," Siéntate"],
+        contacto: ["📱 Abre mensajes","👀 Lee un mensaje","👤 Elige persona","💬 Escribe 'hola'","⏳ Espera 1 min","🤔 ¿Lo envío?","📨 Envía","💾 Guarda borrador","📱 Cierra app","🌬️ Respira"],
+        consumo: ["⏸️ Para 1 min","💧 Bebe agua","🤔 ¿Necesidad o impulso?","⏳ Espera 5 min","🧘 Respira","💊 Toma mitad","📝 Registra","💚 No te juzgues","🌱 Alternativa mañana","✨ Sigue"],
         pantallas: ["⏲️ Temporizador 15 min","📱 Usa normal","🔔 ¿Sigo por gusto?","⏸️ Apaga 1 min","🧘 Mira ventana","🤔 ¿Seguir?","⏲️ +10 min","🖐️ Levántate","🪴 Toca algo físico","🌬️ Respira"],
-        compras: ["🛑 Cierra pestaña","⏳ Espera 2 min"," ¿Lo necesito?","⭐ Favoritos"," Espera 24h","💰 ¿Versión barata?","💚 Cómpralo sin culpa","📊 Registra","🌱 Agradece","✨ Decisión consciente"],
-        higieneExtrema: ["🛑 Detente","️ 5 min","🧼 Solo 5 min","🔔 Para","🚪 Sal del baño","🖐️ Toca algo","️ Respira","💚 'Está bien así'","🪞 Sonríe","✨ Suficiente"],
-        meditacion: ["🪑 Busca lugar tranquilo","⏱️ Temporizador 5 min","🧘 Siéntate cómodo"," Cierra ojos suavemente","🌬️ Siente respiración","🌀 Observa sin juzgar","💆 Relaja hombros","❤️ Agradece momento","🔔 Al sonar, espera 10 seg","✨ Lleva calma al día"],
-        lectura: ["📚 Elige libro/artículo","🪑 Busca lugar cómodo"," Silencia notificaciones","☕ Prepara bebida","👀 Lee 1 párrafo lento","🤔 ¿Qué aprendí?"," Subraya/anota algo","🌬️ Respira entre páginas","🎯 Define meta hoy","✨ Cierra con gratitud"],
-        gratitud: ["📓 Abre cuaderno/app","️ Respira hondo 3x","💭 1 cosa buena de hoy","✍️ Escríbela detallada","🙏 Añade 'Gracias por'","💫 Recuerda persona valiosa","💌 Envía mensaje","🌈 Busca belleza en pequeño","💚 Reconoce tu esfuerzo","✨ Guarda sensación"],
-        orden: [" ¿Qué abruma?","🎯 Elige 1 zona pequeña","⏱️ Temporizador 10 min","🗑️ Tira lo inservible","📦 Guarda con lugar"," Limpia superficie","✨ Admira resultado"," Foto antes/después","💡 ¿Qué facilita esto?","🌱 5 min diarios"],
+        compras: ["🛑 Cierra pestaña","⏳ Espera 2 min","🤔 ¿Lo necesito?","⭐ Favoritos","📅 Espera 24h","💰 ¿Versión barata?","💚 Cómpralo sin culpa","📊 Registra","🌱 Agradece","✨ Decisión consciente"],
+        higieneExtrema: ["🛑 Detente","⏲️ 5 min","🧼 Solo 5 min","🔔 Para","🚪 Sal del baño","🖐️ Toca algo","🌬️ Respira","💚 'Está bien así'","🪞 Sonríe","✨ Suficiente"],
+        meditacion: ["🪑 Busca lugar tranquilo","⏱️ Temporizador 5 min","🧘 Siéntate cómodo","👀 Cierra ojos suavemente","🌬️ Siente respiración","🌀 Observa sin juzgar","💆 Relaja hombros","❤️ Agradece momento","🔔 Al sonar, espera 10 seg","✨ Lleva calma al día"],
+        lectura: ["📚 Elige libro/artículo","🪑 Busca lugar cómodo","📵 Silencia notificaciones","☕ Prepara bebida","👀 Lee 1 párrafo lento","🤔 ¿Qué aprendí?","📝 Subraya/anota algo","🌬️ Respira entre páginas","🎯 Define meta hoy","✨ Cierra con gratitud"],
+        gratitud: ["📓 Abre cuaderno/app","🌬️ Respira hondo 3x","💭 1 cosa buena de hoy","✍️ Escríbela detallada","🙏 Añade 'Gracias por'","💫 Recuerda persona valiosa","💌 Envía mensaje","🌈 Busca belleza en pequeño","💚 Reconoce tu esfuerzo","✨ Guarda sensación"],
+        orden: ["👀 ¿Qué abruma?","🎯 Elige 1 zona pequeña","⏱️ Temporizador 10 min","🗑️ Tira lo inservible","📦 Guarda con lugar","🧽 Limpia superficie","✨ Admira resultado","📸 Foto antes/después","💡 ¿Qué facilita esto?","🌱 5 min diarios"],
         creatividad: ["🎨 Elige medio","⏱️ 15 min sin interrupciones","🌬️ Respira/suelta expectativas","✏️ Empieza sin juzgar","🌀 Deja fluir","💫 Juega con elementos","🤔 ¿Qué te sorprendió?","📝 Anota 1 idea","🙌 Celebra el proceso","✨ Guarda con cariño"],
-        naturaleza: [" Mira por ventana","🚪 Sal o abre ventana","🌬️ 3 respiraciones aire"," Escucha sonidos","🌿 Toca planta/tierra","☀️ Siente sol/brisa","🚶 3 pasos conscientes","💭 'Soy parte de esto'","🙏 Agradece naturaleza","✨ Lleva calma"],
-        limites: ["🪞 ¿Qué me agotó?","✍️ 1 'sí' que fue 'no'","💭 ¿Qué necesitaba?","🗣️ Practica 'Prefiero...'","️ Visualiza límite","💬 Mensaje asertivo","🌬️ Poner límites es cuidar","💚 Merezco respeto","🎯 1 límite pequeño mañana","✨ Celebra valentía"],
-        autocuidado: ["🪞 Mírate con amabilidad","💧 Bebe agua","️ 3 respiraciones profundas","💆 Masajea manos/cuello","🕯️ Luz cálida/vela","🎵 Canción calmante","🧴 Crema/perfume favorito","💭 'Merezco este cuidado'"," 1 necesidad mañana","✨ Abraza tu esfuerzo"],
-        aprendizaje: ["🎯 Tema pequeño"," 1 fuente confiable","⏱️ 10 min sin distracciones","👀 Atención plena","📝 1 idea clave tuya","🤔 ¿Cómo aplicarlo hoy?","💬 Compártelo","🔄 Repite en voz alta","💡 Visualiza yo futuro","✨ Celebra aprendizaje"],
-        silencio: ["📵 Silencia móvil","🔕 Cierra apps/pestañas"," Lugar tranquilo","⏱️ 5 min","👀 Ojos cerrados/punto fijo","👂 Sonidos sin nombrar","️ Aire entra/sale","💭 Pensamientos pasan","🔔 1 min extra quietud","✨ Lleva quietud"]
+        naturaleza: ["👀 Mira por ventana","🚪 Sal o abre ventana","🌬️ 3 respiraciones aire","👂 Escucha sonidos","🌿 Toca planta/tierra","☀️ Siente sol/brisa","🚶 3 pasos conscientes","💭 'Soy parte de esto'","🙏 Agradece naturaleza","✨ Lleva calma"],
+        limites: ["🪞 ¿Qué me agotó?","✍️ 1 'sí' que fue 'no'","💭 ¿Qué necesitaba?","🗣️ Practica 'Prefiero...'","🛡️ Visualiza límite","💬 Mensaje asertivo","🌬️ Poner límites es cuidar","💚 Merezco respeto","🎯 1 límite pequeño mañana","✨ Celebra valentía"],
+        autocuidado: ["🪞 Mírate con amabilidad","💧 Bebe agua","🌬️ 3 respiraciones profundas","💆 Masajea manos/cuello","🕯️ Luz cálida/vela","🎵 Canción calmante","🧴 Crema/perfume favorito","💭 'Merezco este cuidado'","📝 1 necesidad mañana","✨ Abraza tu esfuerzo"],
+        aprendizaje: ["🎯 Tema pequeño","🔍 1 fuente confiable","⏱️ 10 min sin distracciones","👀 Atención plena","📝 1 idea clave tuya","🤔 ¿Cómo aplicarlo hoy?","💬 Compártelo","🔄 Repite en voz alta","💡 Visualiza yo futuro","✨ Celebra aprendizaje"],
+        silencio: ["📵 Silencia móvil","🔕 Cierra apps/pestañas","🪑 Lugar tranquilo","⏱️ 5 min","👀 Ojos cerrados/punto fijo","👂 Sonidos sin nombrar","🌬️ Aire entra/sale","💭 Pensamientos pasan","🔔 1 min extra quietud","✨ Lleva quietud"]
     };
 
     let conductaActualId = null;
+    let synth = window.speechSynthesis;
+    let hablando = false;
 
     function init() {
         try {
-            // 1. Cargar Pacto
             const dato = localStorage.getItem('faro_pacto_nuevo');
             if (!dato) { window.location.href = 'seleccion.html'; return; }
             
             const pacto = JSON.parse(dato);
             if (!pacto.conductasActivas || pacto.conductasActivas.length === 0) { window.location.href = 'seleccion.html'; return; }
             
-            // 2. Lógica Inteligente: Seleccionar la primera pendiente
             const hoy = new Date().toISOString().split('T')[0];
             const estado = JSON.parse(localStorage.getItem('faro_estado_por_conducta') || '{}');
             
             let primeraPendiente = pacto.conductasActivas[0];
-            
-            // Buscar la primera que NO esté completada hoy
             for (let c of pacto.conductasActivas) {
                 if (estado[c.id] !== hoy) {
                     primeraPendiente = c;
-                    break; // Encontramos una pendiente, la seleccionamos y paramos
+                    break;
                 }
             }
             
             conductaActualId = primeraPendiente.id;
-            
             renderizarSelector(pacto.conductasActivas);
             renderizarPasos();
-            
         } catch (e) {
             console.error(e);
             window.location.href = 'seleccion.html';
@@ -163,6 +162,58 @@
         });
     }
 
+    function leerPaso(texto) {
+        if (!synth) {
+            alert('Tu navegador no soporta la función de voz');
+            return;
+        }
+        
+        if (hablando) {
+            synth.cancel();
+            hablando = false;
+            actualizarBotonVoz();
+            return;
+        }
+        
+        // Limpiar emojis del texto para la voz
+        const textoLimpio = texto.replace(/[🌬️🍽️📵😋💧😌📱🛌🚪⏱️🪥✨👕👟🔑🚶💪‍♂️💬📨💾🍷⏸️💊📝💚🌱⏲️🖐️🛑⭐💰📊🔇🧹🎨🚧🎓]/g, '').trim();
+        
+        const utterance = new SpeechSynthesisUtterance(textoLimpio);
+        utterance.lang = 'es-ES';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        
+        utterance.onstart = () => {
+            hablando = true;
+            actualizarBotonVoz();
+        };
+        
+        utterance.onend = () => {
+            hablando = false;
+            actualizarBotonVoz();
+        };
+        
+        utterance.onerror = () => {
+            hablando = false;
+            actualizarBotonVoz();
+        };
+        
+        synth.speak(utterance);
+    }
+
+    function actualizarBotonVoz() {
+        const btn = document.querySelector('.btn-voz');
+        if (btn) {
+            if (hablando) {
+                btn.classList.add('hablando');
+                btn.textContent = '🔇';
+            } else {
+                btn.classList.remove('hablando');
+                btn.textContent = '🔊';
+            }
+        }
+    }
+
     function renderizarPasos() {
         const info = INFO[conductaActualId];
         const pasos = PASOS[conductaActualId];
@@ -170,14 +221,13 @@
         
         document.getElementById('tituloConducta').innerHTML = `${info.emoji} ${info.nombre}`;
         
-        // Verificar si ya completó hoy
         try {
             const estado = JSON.parse(localStorage.getItem('faro_estado_por_conducta') || '{}');
             if (estado[conductaActualId] === hoy) {
                 document.getElementById('estadoRacha').innerHTML = "✨ Hoy te cuidaste";
                 document.getElementById('zonaPasos').innerHTML = `
                     <div class="paso-box" style="border-color: #4A6FA5; box-shadow: 0 0 20px rgba(74, 111, 165, 0.1);">
-                        <div style="font-size: 2rem; margin-bottom: 1rem;"></div>
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">🌙</div>
                         <div class="paso-txt" style="color: #4A6FA5;">Hoy te cuidaste. Qué orgullo.</div>
                         <div class="frase">Cuando te sientas listo/a, aquí estaremos.<br>Sin prisa, sin juicio. 💛</div>
                     </div>
@@ -186,14 +236,12 @@
             }
         } catch {}
 
-        // Obtener progreso
         let progreso = 0;
         try { progreso = parseInt(localStorage.getItem(`progreso_${conductaActualId}_${hoy}`)) || 0; } catch {}
 
         document.getElementById('estadoRacha').innerHTML = "✨ Tu ritmo te espera";
 
         if (progreso >= pasos.length) {
-            // Pasos terminados, falta marcar el día
             document.getElementById('zonaPasos').innerHTML = `
                 <div class="paso-box">
                     <div class="paso-txt">🎉 ¡Ritmo completado!</div>
@@ -202,11 +250,14 @@
                 </div>
             `;
         } else {
-            // Mostrar paso
+            const pasoActual = pasos[progreso];
             document.getElementById('zonaPasos').innerHTML = `
                 <div class="paso-box">
                     <div class="paso-num">PASO ${progreso + 1} DE ${pasos.length}</div>
-                    <div class="paso-txt">${pasos[progreso]}</div>
+                    <div class="paso-txt">
+                        ${pasoActual}
+                        <button class="btn-voz" onclick="leerPaso('${pasoActual.replace(/'/g, "\\'")}')" title="Escuchar paso">🔊</button>
+                    </div>
                     <div class="frase">${frases[progreso % frases.length]}</div>
                     <button class="btn-main" onclick="siguientePaso()">SIGUIENTE PASO ➜</button>
                     <button class="btn-sec" onclick="pausarHoy()">⏸️ PAUSAR HOY</button>
@@ -215,10 +266,8 @@
         }
     }
 
-    // Frases de ánimo
-    const frases = ["🌈 Cada paso cuenta","💛 A tu ritmo","🌱 Pequeños gestos","✨ Lo importante es intentarlo","🕯️ Estás aquí","💫 Sin juicio"," Progreso no perfección","🌿 Tu bienestar","🫂 Sé amable","⭐ Hoy basta"];
+    const frases = ["🌈 Cada paso cuenta","💛 A tu ritmo","🌱 Pequeños gestos","✨ Lo importante es intentarlo","🕯️ Estás aquí","💫 Sin juicio","🤍 Progreso no perfección","🌿 Tu bienestar","🫂 Sé amable","⭐ Hoy basta"];
 
-    // Acciones Globales
     window.siguientePaso = function() {
         const hoy = new Date().toISOString().split('T')[0];
         let progreso = parseInt(localStorage.getItem(`progreso_${conductaActualId}_${hoy}`)) || 0;
@@ -252,7 +301,6 @@
         }
     };
 
-    // Arrancar
     init();
 </script>
 
