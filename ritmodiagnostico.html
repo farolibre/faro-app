@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FARO - Ritmo</title>
+    <style>
+        :root { --bg: #0a0a0a; --card: #1A1A1A; --primary: #E6C200; --text: #fff; --text-dim: #888; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+        .container { text-align: center; max-width: 500px; width: 100%; position: relative; }
+        
+        /* UI Elements */
+        .selector { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; background: #111; padding: 0.8rem; border-radius: 50px; }
+        .btn-conducta { background: transparent; border: 1px solid #333; color: #888; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+        .btn-conducta.activo { border-color: var(--primary); color: var(--primary); background: rgba(230,194,0,0.1); }
+        
+        .card { background: var(--card); border: 1px solid #333; border-radius: 24px; padding: 2rem; margin-bottom: 1.5rem; }
+        .titulo-conducta { color: var(--primary); font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: bold; }
+        .estado { font-size: 0.8rem; color: #E69500; background: rgba(230,149,0,0.1); padding: 0.2rem 0.8rem; border-radius: 10px; display: inline-block; margin-bottom: 1rem; }
+        
+        .paso-box { background: #0D0D0D; border: 2px solid var(--primary); border-radius: 20px; padding: 1.5rem; margin-top: 1rem; }
+        .paso-num { color: var(--primary); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px; }
+        .paso-txt { font-size: 1.3rem; font-weight: bold; margin-bottom: 1.5rem; }
+        .frase { color: var(--primary); font-style: italic; margin-bottom: 1.5rem; opacity: 0.8; }
+        
+        .btn-main { background: var(--primary); color: #000; border: none; padding: 0.8rem; width: 100%; border-radius: 40px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-bottom: 0.5rem; }
+        .btn-sec { background: transparent; border: 1px solid #555; color: #888; padding: 0.6rem; width: 100%; border-radius: 40px; cursor: pointer; }
+        .btn-link { background: none; border: none; color: #555; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-top: 1rem; }
+        
+        /* DEBUG BOX */
+        #debug-box {
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: #222; color: #0f0; padding: 5px 10px; 
+            font-family: monospace; font-size: 0.7rem; text-align: left;
+            border-top: 1px solid #0f0; z-index: 999; max-height: 100px; overflow-y: auto;
+        }
+        .error-msg { color: #ff4444; border-color: #ff4444; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Selector de conductas -->
+    <div class="selector" id="selector"></div>
+
+    <!-- Tarjeta Principal -->
+    <div class="card">
+        <div class="titulo-conducta" id="tituloConducta">Cargando...</div>
+        <div class="estado" id="estadoRacha">🌱 Iniciando...</div>
+        
+        <div id="zonaPasos">
+            <!-- Aquí se inyectan los pasos dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Botones inferiores -->
+    <div>
+        <button class="btn-link" onclick="window.location.href='seleccion.html'">⚙️ Editar conductas</button>
+        <button class="btn-link" onclick="borrarDatos()">🔄 Reiniciar app</button>
+    </div>
+</div>
+
+<!-- Caja de Diagnóstico -->
+<div id="debug-box">Esperando carga...</div>
+
+<script>
+    // ==========================================
+    // DATOS (20 Conductas)
+    // ==========================================
+    const INFO = {
+        comer: { emoji: "️", nombre: "Comer" }, dormir: { emoji: "😴", nombre: "Dormir" },
+        higiene: { emoji: "🚿", nombre: "Higiene" }, salir: { emoji: "🚪", nombre: "Salir" },
+        movimiento: { emoji: "💪", nombre: "Movimiento" }, contacto: { emoji: "💬", nombre: "Contacto" },
+        consumo: { emoji: "🍷", nombre: "Consumo" }, pantallas: { emoji: "📱", nombre: "Pantallas" },
+        compras: { emoji: "🛍️", nombre: "Compras" }, higieneExtrema: { emoji: "", nombre: "Higiene extrema" },
+        meditacion: { emoji: "🧘", nombre: "Meditación" }, lectura: { emoji: "📚", nombre: "Lectura" },
+        gratitud: { emoji: "", nombre: "Gratitud" }, orden: { emoji: "🧹", nombre: "Orden" },
+        creatividad: { emoji: "", nombre: "Creatividad" }, naturaleza: { emoji: "🌿", nombre: "Naturaleza" },
+        limites: { emoji: "🚧", nombre: "Límites" }, autocuidado: { emoji: "💆", nombre: "Autocuidado" },
+        aprendizaje: { emoji: "🎓", nombre: "Aprendizaje" }, silencio: { emoji: "", nombre: "Silencio" }
+    };
+
+    const PASOS = {
+        comer: ["🌬️ Respira hondo"," Mira lo que tienes","🍽️ Elige algo","🍳 Prepara","📵 Sin distracciones","😋 Primer bocado","🦷 Mastica"," Bebe agua","😌 Disfruta","✨ Reconoce"],
+        dormir: [" Apaga pantallas","💧 Agua tibia","🧘 Estírate","🛌 Acuéstate","💡 Apaga luz","😌 Cierra ojos","🌬️ Respira 5 veces","🧘 Relaja cuerpo","⏰ Si no duermes, levántate","😴 Vuelve"],
+        higiene: ["🚪 Entra al baño","💧 Abre grifo"," Mójate cara","🧼 Jabón","⏱️ 20 seg","💧 Enjuaga","🧻 Sécate"," Cepíllate","💧 Cepillo","✨ Limpio"],
+        salir: [" Ropa","👟 Zapatos","🔑 Llaves","🚪 Abre","👀 Asoma","🌞 Sal","🌬️ Respira","🚶 Camina 1 min","🪞 Mírate","🏆 Listo"],
+        movimiento: ["🧘 De pie","‍♂️ Brazos"," Piernas","💪 Hombros"," Lado","🧘 Otro","🚶 Adelante"," Atrás","💪 Cuello"," Siéntate"],
+        contacto: [" Mensajes","👀 Lee","👤 Elige","💬 'Hola'","⏳ Espera","🤔 ¿Envío?","📨 Envía"," Borrador","📱 Cierra","🌬️ Respira"],
+        consumo: ["⏸️ Para 1 min","💧 Agua","🤔 ¿Impulso?","⏳ 5 min","🧘 Respira","💊 Mitad","📝 Registra","💚 Sin juicio","🌱 Alternativa","✨ Sigue"],
+        pantallas: ["️ 15 min","📱 Usa","🔔 ¿Gusto?","️ Apaga 1 min"," Ventana","🤔 ¿Seguir?","⏲️ +10 min","️ Levántate","🪴 Toca algo","🌬️ Respira"],
+        compras: ["🛑 Cierra","⏳ 2 min","🤔 ¿Necesito?","⭐ Favoritos","📅 24h","💰 Barato?","💚 Compra","📊 Registra","🌱 Agradece","✨ Consciente"],
+        higieneExtrema: ["🛑 Detente","️ 5 min","🧼 Solo 5 min","🔔 Para","🚪 Sal","🖐️ Toca","️ Respira","💚 'Está bien'","🪞 Sonríe","✨ Suficiente"],
+        meditacion: [" Lugar","⏱️ 5 min","🧘 Siéntate","👀 Ojos","🌬️ Respira","🌀 Observa","💆 Relaja","❤️ Agradece","🔔 Espera","✨ Calma"],
+        lectura: ["📚 Elige","🪑 Cómodo"," Silencio","☕ Bebida"," Lee lento","🤔 ¿Aprendí?","📝 Anota","️ Respira","🎯 Meta","✨ Gratitud"],
+        gratitud: ["📓 Abre","🌬️ Respira","💭 Algo bueno","✍️ Escribe","🙏 Gracias","💫 Persona","💌 Envía","🌈 Pequeño","💚 Esfuerzo","✨ Guarda"],
+        orden: ["👀 ¿Qué?","🎯 Zona","⏱️ 10 min","🗑️ Tira","📦 Guarda","🧽 Limpia","✨ Mira","📸 Foto","💡 Facilita","🌱 5 min"],
+        creatividad: ["🎨 Medio","️ 15 min","🌬️ Suelta","✏️ Empieza","🌀 Fluye","💫 Juega","🤔 Sorpresa","📝 Idea"," Proceso","✨ Cariño"],
+        naturaleza: ["👀 Ventana","🚪 Sal","🌬️ Aire"," Sonidos","🌿 Toca","☀️ Sol","🚶 Pasos","💭 Parte","🙏 Gracias","✨ Calma"],
+        limites: ["🪞 ¿Agotó?","✍️ Sí/No","💭 Necesidad","🗣️ Prefiero","🛡️ Visualiza","💬 Mensaje","🌬️ Cuidar","💚 Respeto","🎯 Límite","✨ Valentía"],
+        autocuidado: ["🪞 Mírate","💧 Agua","🌬️ Respira","💆 Masaje","🕯️ Luz","🎵 Música","🧴 Crema"," Mereces","📝 Necesidad","✨ Abraza"],
+        aprendizaje: ["🎯 Tema","🔍 Fuente","️ 10 min","👀 Atento","📝 Idea","🤔 Aplica","💬 Comparte","🔄 Repite","💡 Futuro","✨ Aprende"],
+        silencio: ["📵 Silencio","🔕 Cierra","🪑 Lugar","⏱️ 5 min"," Ojos","👂 Escucha","🌬️ Aire","💭 Pasa","🔔 1 min","✨ Quietud"]
+    };
+
+    // ==========================================
+    // LÓGICA PRINCIPAL
+    // ==========================================
+    let conductaActual = "comer";
+    let pacto = null;
+
+    function log(msg, type="info") {
+        const box = document.getElementById('debug-box');
+        box.innerHTML = `[${type}] ${msg}`;
+        box.className = type === 'error' ? 'error-msg' : '';
+        console.log(`[FARO] ${msg}`);
+    }
+
+    function init() {
+        log("Iniciando carga...");
+        try {
+            // 1. Cargar Pacto
+            const dato = localStorage.getItem('faro_pacto_nuevo');
+            if (!dato) throw new Error("No hay datos guardados (faro_pacto_nuevo vacío)");
+            
+            pacto = JSON.parse(dato);
+            if (!pacto.conductasActivas || pacto.conductasActivas.length === 0) {
+                throw new Error("Lista de conductas vacía");
+            }
+
+            log(`✅ Pacto cargado: ${pacto.conductasActivas.length} conductas`);
+
+            // 2. Determinar conducta actual
+            conductaActual = pacto.conductasActivas[0].id;
+            
+            // 3. Renderizar
+            renderSelector();
+            renderPaso();
+            
+        } catch (e) {
+            log(`❌ ERROR FATAL: ${e.message}`, 'error');
+            alert("FARO detectó un error en los datos. Te llevaremos a configuración.");
+            window.location.href = 'seleccion.html';
+        }
+    }
+
+    function renderSelector() {
+        const div = document.getElementById('selector');
+        div.innerHTML = '';
+        pacto.conductasActivas.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = `btn-conducta ${c.id === conductaActual ? 'activo' : ''}`;
+            btn.textContent = `${c.emoji} ${c.nombre}`;
+            btn.onclick = () => {
+                conductaActual = c.id;
+                renderSelector();
+                renderPaso();
+            };
+            div.appendChild(btn);
+        });
+    }
+
+    function renderPaso() {
+        const info = INFO[conductaActual];
+        const pasos = PASOS[conductaActual];
+        const hoy = new Date().toISOString().split('T')[0];
+        
+        // UI Updates
+        document.getElementById('tituloConducta').innerHTML = `${info.emoji} ${info.nombre}`;
+        
+        // Verificar completado hoy
+        try {
+            const estado = JSON.parse(localStorage.getItem('faro_estado_por_conducta') || '{}');
+            if (estado[conductaActual] === hoy) {
+                log("✅ Hoy ya completado");
+                document.getElementById('estadoRacha').textContent = "✨ Hoy te cuidaste";
+                document.getElementById('zonaPasos').innerHTML = `
+                    <div class="paso-box">
+                        <div class="paso-txt">Hoy te cuidaste. Qué orgullo.</div>
+                        <div class="frase">Cuando te sientas listo/a, aquí estaremos.</div>
+                    </div>
+                `;
+                return;
+            }
+        } catch(e) {}
+
+        // Progreso
+        let progreso = 0;
+        try {
+            progreso = parseInt(localStorage.getItem(`progreso_${conductaActual}_${hoy}`)) || 0;
+        } catch(e) {}
+
+        document.getElementById('estadoRacha').textContent = " En proceso...";
+
+        if (progreso >= pasos.length) {
+            // Completado los pasos, falta marcar día
+            document.getElementById('zonaPasos').innerHTML = `
+                <div class="paso-box">
+                    <div class="paso-txt">✨ ¡Ritmo completado!</div>
+                    <button class="btn-main" onclick="marcarDia()">💛 MARCAR DÍA CUIDADO</button>
+                </div>
+            `;
+        } else {
+            // Paso actual
+            document.getElementById('zonaPasos').innerHTML = `
+                <div class="paso-box">
+                    <div class="paso-num">PASO ${progreso + 1} DE ${pasos.length}</div>
+                    <div class="paso-txt">${pasos[progreso]}</div>
+                    <div class="frase">A tu ritmo, sin prisa.</div>
+                    <button class="btn-main" onclick="siguientePaso()">SIGUIENTE PASO ➜</button>
+                    <button class="btn-sec" onclick="pausarHoy()">️ PAUSAR HOY</button>
+                </div>
+            `;
+        }
+    }
+
+    // Acciones
+    window.siguientePaso = function() {
+        const hoy = new Date().toISOString().split('T')[0];
+        let progreso = parseInt(localStorage.getItem(`progreso_${conductaActual}_${hoy}`)) || 0;
+        localStorage.setItem(`progreso_${conductaActual}_${hoy}`, progreso + 1);
+        log(`👉 Paso avanzado: ${progreso + 1}`);
+        renderPaso();
+    };
+
+    window.marcarDia = function() {
+        const hoy = new Date().toISOString().split('T')[0];
+        try {
+            const estado = JSON.parse(localStorage.getItem('faro_estado_por_conducta') || '{}');
+            estado[conductaActual] = hoy;
+            localStorage.setItem('faro_estado_por_conducta', JSON.stringify(estado));
+            localStorage.removeItem(`progreso_${conductaActual}_${hoy}`);
+            log("🏁 Día marcado como completado");
+        } catch(e) {
+            log(`Error al guardar estado: ${e.message}`, 'error');
+        }
+        renderPaso();
+    };
+
+    window.pausarHoy = function() {
+        if(confirm("¿Pausar hoy? Se reiniciará el progreso de hoy.")) {
+            const hoy = new Date().toISOString().split('T')[0];
+            localStorage.removeItem(`progreso_${conductaActual}_${hoy}`);
+            log("⏸️ Progreso reiniciado");
+            renderPaso();
+        }
+    };
+
+    window.borrarDatos = function() {
+        if(confirm("¿Borrar TODO y empezar de cero?")) {
+            localStorage.clear();
+            window.location.href = 'seleccion.html';
+        }
+    };
+
+    // Arrancar
+    init();
+</script>
+
+</body>
+</html>
