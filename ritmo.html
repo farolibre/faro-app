@@ -90,30 +90,249 @@
         limites: { emoji: "🚧", nombre: "Límites" }, autocuidado: { emoji: "💆", nombre: "Autocuidado" },
         aprendizaje: { emoji: "🎓", nombre: "Aprendizaje" }, silencio: { emoji: "🔇", nombre: "Silencio digital" }
     };
-
-    const PASOS = {
-        comer: ["🌬️ Respira hondo","👀 Mira lo que tienes","🍽️ Elige algo","🍳 Prepara el plato","📵 Sin distracciones","😋 Primer bocado","🦷 Mastica","💧 Bebe agua","😌 Disfruta","🏆 Reconócete"],
-        dormir: ["📱 Apaga pantallas","💧 Agua tibia","🧘 Estírate","🛌 Acuéstate","💡 Apaga luz","😌 Cierra ojos","🌬️ Respira 5 veces","🧘 Relaja cuerpo","⏰ Si no duermes, levántate","😴 Vuelve a la cama"],
-        higiene: ["🚪 Entra al baño","💧 Abre grifo","😌 Mójate cara","🧼 Jabón en manos","⏱️ Lávate 20 seg","💧 Enjuaga","🧻 Sécate","🪥 Cepíllate","💧 Enjuaga cepillo","✨ Siéntete limpio"],
-        salir: ["👕 Ropa cómoda","👟 Ponte zapatos","🔑 Coge llaves","🚪 Abre puerta","👀 Asoma 5 seg","🌞 Sal al exterior","🌬️ Respira","🚶 Camina 1 min","🪞 Mírate al volver","🏆 Enfrentaste el exterior"],
-        movimiento: ["🧘 Ponte de pie","🙆‍️ Estira brazos"," Estira piernas"," Gira hombros"," Inclínate lado"," Inclínate otro"," 5 pasos adelante"," 5 pasos atrás"," Estira cuello"," Siéntate"],
-        contacto: ["📱 Abre mensajes","👀 Lee un mensaje","👤 Elige persona","💬 Escribe 'hola'","⏳ Espera 1 min","🤔 ¿Lo envío?","📨 Envía","💾 Guarda borrador","📱 Cierra app","🌬️ Respira"],
-        consumo: ["⏸️ Para 1 min","💧 Bebe agua","🤔 ¿Necesidad o impulso?","⏳ Espera 5 min","🧘 Respira","💊 Toma mitad","📝 Registra","💚 No te juzgues","🌱 Alternativa mañana","✨ Sigue"],
-        pantallas: ["⏲️ Temporizador 15 min","📱 Usa normal","🔔 ¿Sigo por gusto?","⏸️ Apaga 1 min","🧘 Mira ventana","🤔 ¿Seguir?","⏲️ +10 min","🖐️ Levántate","🪴 Toca algo físico","🌬️ Respira"],
-        compras: ["🛑 Cierra pestaña","⏳ Espera 2 min","🤔 ¿Lo necesito?","⭐ Favoritos","📅 Espera 24h","💰 ¿Versión barata?","💚 Cómpralo sin culpa","📊 Registra","🌱 Agradece","✨ Decisión consciente"],
-        higieneExtrema: ["🛑 Detente","⏲️ 5 min","🧼 Solo 5 min","🔔 Para","🚪 Sal del baño","🖐️ Toca algo","🌬️ Respira","💚 'Está bien así'","🪞 Sonríe","✨ Suficiente"],
-        meditacion: ["🪑 Busca lugar tranquilo","⏱️ Temporizador 5 min","🧘 Siéntate cómodo","👀 Cierra ojos suavemente","🌬️ Siente respiración","🌀 Observa sin juzgar","💆 Relaja hombros","❤️ Agradece momento","🔔 Al sonar, espera 10 seg","✨ Lleva calma al día"],
-        lectura: ["📚 Elige libro/artículo","🪑 Busca lugar cómodo","📵 Silencia notificaciones","☕ Prepara bebida","👀 Lee 1 párrafo lento","🤔 ¿Qué aprendí?","📝 Subraya/anota algo","🌬️ Respira entre páginas","🎯 Define meta hoy","✨ Cierra con gratitud"],
-        gratitud: ["📓 Abre cuaderno/app","🌬️ Respira hondo 3x","💭 1 cosa buena de hoy","✍️ Escríbela detallada","🙏 Añade 'Gracias por'","💫 Recuerda persona valiosa","💌 Envía mensaje","🌈 Busca belleza en pequeño","💚 Reconoce tu esfuerzo","✨ Guarda sensación"],
-        orden: ["👀 ¿Qué abruma?","🎯 Elige 1 zona pequeña","⏱️ Temporizador 10 min","🗑️ Tira lo inservible","📦 Guarda con lugar","🧽 Limpia superficie","✨ Admira resultado","📸 Foto antes/después","💡 ¿Qué facilita esto?","🌱 5 min diarios"],
-        creatividad: ["🎨 Elige medio","⏱️ 15 min sin interrupciones","🌬️ Respira/suelta expectativas","✏️ Empieza sin juzgar","🌀 Deja fluir","💫 Juega con elementos","🤔 ¿Qué te sorprendió?","📝 Anota 1 idea","🙌 Celebra el proceso","✨ Guarda con cariño"],
-        naturaleza: ["👀 Mira por ventana","🚪 Sal o abre ventana","🌬️ 3 respiraciones aire","👂 Escucha sonidos","🌿 Toca planta/tierra","☀️ Siente sol/brisa","🚶 3 pasos conscientes","💭 'Soy parte de esto'","🙏 Agradece naturaleza","✨ Lleva calma"],
-        limites: ["🪞 ¿Qué me agotó?","✍️ 1 'sí' que fue 'no'","💭 ¿Qué necesitaba?","🗣️ Practica 'Prefiero...'","🛡️ Visualiza límite","💬 Mensaje asertivo","🌬️ Poner límites es cuidar","💚 Merezco respeto","🎯 1 límite pequeño mañana","✨ Celebra valentía"],
-        autocuidado: ["🪞 Mírate con amabilidad","💧 Bebe agua","🌬️ 3 respiraciones profundas","💆 Masajea manos/cuello","🕯️ Luz cálida/vela","🎵 Canción calmante","🧴 Crema/perfume favorito","💭 'Merezco este cuidado'","📝 1 necesidad mañana","✨ Abraza tu esfuerzo"],
-        aprendizaje: ["🎯 Tema pequeño","🔍 1 fuente confiable","⏱️ 10 min sin distracciones","👀 Atención plena","📝 1 idea clave tuya","🤔 ¿Cómo aplicarlo hoy?","💬 Compártelo","🔄 Repite en voz alta","💡 Visualiza yo futuro","✨ Celebra aprendizaje"],
-        silencio: ["📵 Silencia móvil","🔕 Cierra apps/pestañas","🪑 Lugar tranquilo","⏱️ 5 min","👀 Ojos cerrados/punto fijo","👂 Sonidos sin nombrar","🌬️ Aire entra/sale","💭 Pensamientos pasan","🔔 1 min extra quietud","✨ Lleva quietud"]
-    };
-
+const PASOS = {
+    comer: [
+        "🫂 Posa una mano en tu estómago. ¿Es hambre física o ansiedad emocional? No hay respuesta incorrecta.", // Validación
+        "👀 Observa la comida sin juzgarla. No es 'buena' ni 'mala', es combustible.", // Mindfulness
+        "🍽️ Elige algo que puedas digerir ahora mismo, no lo que 'deberías' comer.", // Autocompasión
+        "🍳 Prepáralo con intención. Estás alimentando tu cuerpo, eso es un acto de amor.", // Reframe cognitivo
+        "📵 Aléjate de las pantallas. Tu sistema nervioso necesita calma para procesar.", // Polivagal
+        "😋 Primer bocado lento. Nota la textura. A veces comemos para calmar, está bien.", // Comer consciente
+        "🦷 Mastica despacio. Tu cerebro tarda 20 min en saber que estás lleno.", // Biología
+        "💧 Un sorbo de agua. La hidratación reduce la fatiga mental.", // Fisiología
+        "😌 Si has comido por ansiedad, no te castigues. Ya pasó. Estás aquí.", // Reducción de culpa
+        "✨ Gracias a tu cuerpo. Te sostiene, incluso en los días grises." // Gratitud somática
+    ],
+    dormir: [
+        "📱 Pantallas fuera. La luz azul engaña a tu cerebro y le dice que es de día.", // Higiene de sueño (TCC-I)
+        "💧 Algo tibio. El cambio de temperatura corporal ayuda a inducir el sueño.", // Termorregulación
+        "🧘 Estiramiento suave. Suelta la tensión acumulada en mandíbula y hombros.", // Relajación progresiva
+        "🛌 Acuéstate. La cama es solo para dormir y sexo, no para sufrir despierto.", // Control de estímulos
+        "💡 Oscuridad total. La melatonina necesita sombra para trabajar.", // Neurobiología
+        "😌 Si no viene el sueño en 20 min, levántate. No asocies la cama con el insomnio.", // Regla de oro TCC-I
+        "🌬️ Respiración 4-7-8. Inhala 4, retén 7, exhala 8. Esto activa tu nervio vago.", // Regulación parasimpática
+        "🧘 Escanea tu cuerpo. Relaja dedo por dedo. Estás seguro ahora.", // Body Scan
+        "⏰ Si la mente no para, escribe tus preocupaciones en un papel. 'Lo miro mañana'.", // Vaciamiento cognitivo
+        "😴 Descansa los ojos incluso sin dormir. El reposo también cuenta. Cierra los ojos." // Reducción de ansiedad de desempeño
+    ],
+    higiene: [
+        "🚪 No necesitas ducharte entera. Solo entra al baño. Rompe la inercia.", // Activación conductual
+        "💧 Abre el grifo. El sonido del agua puede ser un ancla sensorial.", // Grounding
+        "😌 Mójate la cara. El reflejo de inmersión baja las pulsaciones cardíacas.", // TIPP (DBT)
+        "🧼 Jabón en manos. Siente la espuma. Vuelve al cuerpo presente.", // Atención plena
+        "⏱️ Si 20 seg es mucho, lava solo lo esencial. 'Algo es mejor que nada'.", // Flexibilidad psicológica
+        "💧 Enjuaga. Siente el agua llevarse la suciedad y, metafóricamente, el peso.", // Rituales simbólicos
+        "🧻 Sécate. El tacto de la toalla es un abrazo propio.", // Autocuidado táctil
+        "🪥 Cepíllate. Cuidar tu boca es cuidar tu salud futura.", // Autocuidado preventivo
+        "✨ Mírate al espejo (si puedes). Si duele, no lo hagas. Tu valor no cambia.", // Compasión radical
+        "💙 Estás limpio/a. Mereces sentirte fresco/a, independientemente de lo difícil que haya sido el día." // Validación
+    ],
+    salir: [
+        "👕 No busques la ropa perfecta. Busca la que te haga sentir protegido/a.", // Seguridad psicológica
+        "👟 Ponte zapatos. Es el símbolo físico de 'listo para actuar'.", // Embodiment
+        "🔑 Coge llaves. Tócalas. Siente el metal. Estás preparándote.", // Anclaje sensorial
+        "🚪 Abre la puerta. No salgas aún. Solo expón tu cuerpo al umbral.", // Exposición gradual
+        "👀 Asoma 5 seg. Mira hacia arriba (al cielo), no al suelo. Cambia tu postura.", // Psicología corporal
+        "🌞 Sal al exterior. La luz natural regula tu ritmo circadiano y tu ánimo.", // Cronobiología
+        "🌬️ Respira aire nuevo. El aire de casa está cargado de tus preocupaciones.", // Cambio de entorno
+        "🚶 Da solo 3 pasos. Si quieres volver, vuelve. Pero da los 3 pasos.", // Micro-objetivos
+        "🪞 Mírate al volver. Has enfrentado el exterior. Eso es valentía.", // Refuerzo positivo
+        "🏆 No tienes que ser social, solo has estado en el mundo. Eres parte de él." // Pertenencia
+    ],
+    movimiento: [
+        "🧘 Ponte de pie. La postura afecta a la química cerebral.", // Postura de poder
+        "🙆‍♂️ Estira brazos. Abre el pecho. Contrarresta la postura de defensa.", // Apertura emocional
+        "🦵 Estira piernas. Sacude las manos. Suelta la energía estancada.", // Liberación somática
+        "💪 Gira hombros. Ahí guardamos el peso del mundo. Suéltalo un poco.", // Somatización
+        "🧘 Inclínate a un lado. Nota la tensión y el estiramiento.", // Consciencia corporal
+        " Camina un poco. El movimiento bilateral ayuda a procesar emociones.", // EMDR natural
+        "💪 Haz una fuerza (puño, sentadilla). Usa la adrenalina de forma segura.", // Canalización de ira
+        "🧘 Vuelve a la calma. Nota cómo baja tu pulso.", // Recuperación
+        "🪑 Siéntate. Agradece a tus piernas lo que te permiten hacer.", // Gratitud funcional
+        "✨ Tu cuerpo no es un enemigo. Es tu vehículo. Trátalo con amabilidad." // Relación cuerpo-mente
+    ],
+    contacto: [
+        "📱 Abre mensajes. No tienes que responder, solo mira.", // Exposición segura
+        "👀 Lee un mensaje viejo y bonito. Recuerda que hay gente que te quiere.", // Banco de recursos positivos
+        "👤 Elige a alguien segura. Alguien que no te juzgue.", // Selección de entorno seguro
+        "💬 Escribe 'Hola' o un emoji. No necesitas un discurso perfecto.", // Reducción de presión
+        "⏳ Espera. La ansiedad te dice 'borra'. Quédate con la incomodidad 1 min.", // Tolerancia al malestar (DBT)
+        "🤔 ¿Lo envío? Si te aterra, guárdalo. El intento ya cuenta.", // Validación
+        "📨 Envía. La vulnerabilidad es el precio de la conexión.", // Brené Brown
+        "📱 Cierra la app. No esperes la respuesta inmediata. Hazlo por ti.", // Desapego
+        "🌬️ Respira. Enviar un mensaje es un puente. Ya lanzaste la semilla.", // Metáfora
+        "💙 Mereces conexión. Incluso si hoy te sientes invisible." // Validación de existencia
+    ],
+    consumo: [
+        "⏸️ Para. El impulso es como una ola: sube, toca techo y baja. Tú eres el mar.", // Surfear el impulso (DBT)
+        "💧 Bebe agua. A veces confundimos sed o ansiedad con ganas de consumir.", // Chequeo fisiológico
+        "🤔 ¿Es necesidad o alivio rápido? El alivio rápido siempre trae deuda.", // Análisis costo-beneficio
+        "⏳ Espera 5 min. Pon un temporizador. Si en 5 min sigues queriendo, valoras.", // Técnica de demora
+        "🧘 Respira. El consumo suele tapar una emoción no sentida. ¿Qué sientes?", // Regulación emocional
+        "💊 Si decides consumir, que sea consciente, no automático. Reduce la dosis.", // Reducción de daños
+        "📝 Registra qué sentías antes. Los patrones se rompen al verlos.", // Monitorización
+        "💚 Si recaes, no te odies. La culpa alimenta el ciclo. Perdónate.", // Romper ciclo de culpa
+        "🌱 Mañana es una nueva oportunidad. Hoy ya aprendiste algo.", // Esperanza
+        "✨ Tu valor no depende de tu capacidad de control. Eres valioso/a intentándolo." // Autoestima incondicional
+    ],
+    pantallas: [
+        "⏲️ Temporizador 15 min. Sin límite, el scroll es un agujero negro.", // Límites saludables
+        "📱 Úsalo, pero nota cómo te sientes. ¿Te relaja o te agota?", // Metacognición
+        "🔔 ¿Sigo por gusto o por huir de algo?", // Identificación de evitación
+        "⏸️ Apaga 1 min. Mira a un punto fijo. Deja que tu cerebro descanse.", // Desconexión cognitiva
+        "🧘 Mira por la ventana. Tu vista necesita focalizar lejos (visión periférica relaja).", // Salud visual/nerviosa
+        "🤔 ¿Seguir? Si te sientes mal, para. No es debilidad, es inteligencia.", // Autoconocimiento
+        "⏲️ +10 min o Parar. Tú decides, no el algoritmo.", // Locus de control interno
+        "🖐️ Levántate. Rompe la postura estática. La sangre necesita circular.", // Activación física
+        "🪴 Toca algo real (planta, madera). Regresa a la realidad física.", // Grounding
+        "✨ Tu tiempo es tu vida. Protégelo con cariño." // Valoración del tiempo
+    ],
+    compras: [
+        "🛑 Cierra la pestaña de pago. El carrito no es la compra.", // Freno de emergencia
+        "⏳ Espera 2 min. La dopamina de 'añadir al carrito' es una trampa.", // Neurociencia del deseo
+        "🤔 ¿Lo necesito o quiero llenar un vacío?", // Diferenciación necesidad/deseo
+        "⭐ Favoritos. Guárdalo ahí. Si en 24h lo quieres, vuelves.", // Regla de las 24h
+        "📅 Espera 24h. Las compras impulsivas suelen arrepentirse al día siguiente.", // Control de impulsos
+        "💰 ¿Hay versión barata o usada? Ahorrar también da satisfacción.", // Racionalización
+        "💚 Si lo compras, hazlo sin culpa. Pero que sea una elección, no un acto reflejo.", // Consciencia
+        "📊 Registra cuánto gastaste. Ver los números ayuda a poner límites.", // Feedback objetivo
+        "🌱 Agradece lo que ya tienes. La gratitud es el antídoto de la carencia.", // Gratitud
+        "✨ Mereces cosas, pero mereces más tu paz mental." // Priorización
+    ],
+    higieneExtrema: [
+        "🛑 Detente. La limpieza excesiva suele ser ansiedad disfrazada de orden.", // Psicoeducación
+        "⏲️ Pon un temporizador de 5 min. Cuando suene, para. Entrena a tu cerebro.", // Exposición con prevención de respuesta
+        "🧼 Solo 5 min. No tienes que estar 100% limpio/a, es imposible.", // Tolerancia a la incertidumbre
+        "🔔 Para. Lava el jabón. Cierra el grifo.", // Detención de pensamiento
+        "🚪 Sal del baño. Cambia de ambiente inmediatamente.", // Ruptura de patrón
+        "🖐️ Toca algo 'sucio' o normal (tu ropa, la mesa). Sobrevivirás.", # Exposición sensorial
+        "🌬️ Respira. La ansiedad subirá al parar, pero bajará. Confía en ello.", # Tolerancia al malestar
+        "💚 Di en voz alta: 'Está bien así'. Repítelo hasta que tu cuerpo lo crea.", # Reestructuración cognitiva
+        "🪞 Sonríe (aunque sea forzado). Engaña a tu cerebro para liberar endorfinas.", # Retroalimentación facial
+        "✨ Eres más que tu higiene. Eres una persona valiosa aunque estés desordenado/a." # Identidad separada del síntoma
+    ],
+    meditacion: [
+        "🪑 Busca un lugar donde no te interrumpan. Tu mente necesita un refugio.", # Creación de espacio seguro
+        "⏱️ Solo 5 min. No intentes vaciar la mente, solo obsérvala.", # Expectativas realistas
+        "🧘 Siéntate cómodo. La postura rígida bloquea la respiración.", # Comodidad física
+        "👀 Cierra ojos o mira un punto fijo. Reduce estímulos visuales.", # Foco atencional
+        "🌬️ Siente el aire entrar y salir. No lo fuerces. Tu cuerpo sabe respirar.", # Confianza corporal
+        "🌀 Vendrán pensamientos. No los persigas, no los juzgues. Déjalos pasar como nubes.", # Defusión cognitiva (ACT)
+        "💆 Relaja la mandíbula y los hombros. Ahí se esconde el estrés del día.", # Relajación muscular
+        "❤️ Si te enfadas por no concentrarte, perdónate. Eso es meditar también.", # Autocompasión
+        "🔔 Al terminar, quédate 10 seg quieto. Integra la calma.", # Transición suave
+        "✨ No has perdido el tiempo. Has cuidado de tu jardín interior." # Significado
+    ],
+    lectura: [
+        "📚 Elige algo ligero. No tienes que leer filosofía si estás agotado/a.", # Autocompasión
+        "🪑 Busca un lugar cómodo. La lectura debe ser un refugio, no un examen.", # Ambiente
+        "📵 Silencia notificaciones. Regálate estos minutos sin interrupciones.", # Límites
+        "☕ Prepara algo rico. Asocia la lectura con placer sensorial.", # Refuerzo positivo
+        "👀 Lee solo 1 párrafo. Si engancha, sigue. Si no, déjalo.", # Reducción de presión
+        "🤔 ¿Qué resuena contigo? La lectura es un espejo.", # Conexión emocional
+        "📝 Subraya una frase que te guste. Hazlo tuyo.", # Apropiación
+        "🌬️ Respira entre páginas. Deja que la historia se asiente.", # Pausas activas
+        "🎯 Define cuánto leerás hoy. Cumplir pequeñas metas genera dopamina saludable.", # Sensación de logro
+        "✨ Leer es viajar sin moverse. Gracias por explorar mundos." # Imaginación
+    ],
+    gratitud: [
+        "📓 Abre tu cuaderno. Escribir a mano conecta mejor con la emoción.", # Procesamiento profundo
+        "🌬️ Respira hondo. Conecta con el presente antes de buscar lo bueno.", # Anclaje
+        "💭 Piensa en algo pequeño: el café, el sol, una cama caliente.", # Enfoque en micro-momentos
+        "✍️ Escríbelo con detalle. No vale 'la familia', vale 'la risa de mi hermano'.", # Especificidad
+        "🙏 Añade 'Gracias por...'. La palabra gratitude activa circuitos de recompensa.", # Neuroplasticidad
+        "💫 Recuerda a alguien que te ayudó una vez. Reconectar lazos sana.", # Vínculos sociales
+        "💌 Si puedes, díselo. La gratitud expresada multiplica su efecto.", # Prosocialidad
+        "🌈 Busca belleza en lo imperfecto. Agradece también lo difícil que te enseñó.", # Crecimiento postraumático
+        "💚 Reconoce tu propio esfuerzo. Agradécete a ti mismo/a por seguir aquí.", # Auto-gratitud
+        "✨ La gratitud no niega el dolor, pero pone una luz a su lado." # Integración
+    ],
+    orden: [
+        "👀 Mira tu espacio. No veas el caos, ve una oportunidad de cuidar tu entorno.", # Reframe
+        "🎯 Elige UNA zona pequeña (una mesa, un cajón). No todo a la vez.", # Segmentación
+        "⏱️ Pon 10 min. El orden no es un estado final, es una práctica diaria.", # Hábitos atómicos
+        "🗑️ Tira 3 cosas que no sirvan. Soltar objetos ayuda a soltar carga mental.", # Minimalismo terapéutico
+        "📦 Guarda lo que tenga un lugar. El orden externo da calma interna.", # Estructura
+        "🧽 Limpia una superficie. Ver el resultado inmediato motiva.", # Feedback visual
+        "✨ Admira el resultado. Tu cerebro necesita ver el progreso.", # Refuerzo
+        "📸 Foto antes/después. Para los días malos, tener prueba de que puedes.", # Evidencia de autoeficacia
+        "💡 ¿Cómo te sientes ahora? Más ligero/a, ¿verdad?", # Consciencia emocional
+        "🌱 Un espacio ordenado es un abrazo a tu yo futuro." # Proyección positiva
+    ],
+    creatividad: [
+        "🎨 Elige tu medio. Pintar, escribir, tararear... no importa el qué, importa el flujo.", # Expresión libre
+        "⏱️ 15 min sin juicio. El arte es para ti, no para un museo.", # Desinhibición
+        "🌬️ Respira. Suelta la expectativa de que quede 'bonito'.", # Perfeccionismo
+        "✏️ Empieza garabateando o escribiendo tonterías. Rompe la página en blanco.", # Activación
+        "🌀 Deja fluir. Si sale feo, es perfecto. Es real.", # Autenticidad
+        "💫 Juega. Recupera al niño/a interior que creaba sin miedo.", # Juego terapéutico
+        "🤔 ¿Qué emoción salió? A veces el arte dice lo que la boca calla.", # Expresión emocional
+        "📝 Anota una idea loca. Las ideas no se juzgan al nacer.", # Brainstorming
+        "🙌 Celebra el proceso. Has creado algo que no existía.", # Validación
+        "✨ Eres un ser creativo. Eso no se compra, es tu esencia." # Identidad
+    ],
+    naturaleza: [
+        "👀 Mira por la ventana o sal. La naturaleza no pide nada a cambio.", # Incondicionalidad
+        "🚪 Abre una ventana si no puedes salir. El aire fresco renueva.", # Acceso
+        "🌬️ 3 respiraciones profundas. Imagina que el aire limpia tus pulmones.", # Oxigenación
+        "👂 Escucha. Pájaros, viento, tráfico lejano. Son sonidos reales.", # Atención auditiva
+        "🌿 Toca una planta o tierra. El contacto con la naturaleza baja el cortisol.", # Biofilia
+        "☀️ Siente el sol o la brisa. Eres parte de este ecosistema.", # Conexión
+        "🚶 Camina descalzo/a si puedes (grounding). Conecta con la tierra.", # Earthing
+        "💭 Piensa: 'Soy parte de esto'. No estás separado/a del mundo.", # Pertenencia cósmica
+        "🙏 Agradece a la naturaleza. Ella sigue su ciclo, te enseña paciencia.", # Sabiduría natural
+        "✨ Lleva esta calma contigo. Tienes un jardín dentro." # Internalización
+    ],
+    limites: [
+        "🪞 Pregúntate: ¿Qué me agotó hoy? Identifica la fuga de energía.", # Autocuidado
+        "✍️ Escribe una situación donde dijiste 'sí' queriendo decir 'no'.", # Identificación de patrón
+        "💭 ¿Qué necesitabas en ese momento? Probablemente descanso o respeto.", # Necesidades ocultas
+        "🗣️ Practica en voz alta: 'Prefiero...', 'No puedo...', 'Necesito...'.", # Asertividad
+        "🛡️ Visualiza tu límite como un círculo de luz. Es tu espacio sagrado.", # Imaginación guiada
+        "💬 Escribe un mensaje asertivo (aunque no lo envíes). Practica es poder.", # Ensayo conductual
+        "🌬️ Respira. Poner límites da miedo al principio, luego da libertad.", # Validación del miedo
+        "💚 Reconoce: mereces respeto. Decir no a otros es decirte sí a ti.", # Autoestima
+        "🎯 Elige 1 límite pequeño para mañana. Empieza por lo fácil.", # Escalera de exposición
+        "✨ Tu voz importa. Proteger tu energía no es egoísmo, es supervivencia." # Derecho legítimo
+    ],
+    autocuidado: [
+        "🪞 Mírate con amabilidad. Si vieras a un amigo así, ¿qué le dirías?", # Técnica del amigo
+        "💧 Bebe un vaso de agua. Es el cuidado más básico y a veces el olvidado.", # Necesidad fisiológica
+        "🌬️ 3 respiraciones profundas. Oxigena tus células. Estás vivo/a.", # Presencia
+        "💆 Masajea tus manos o cuello. El tacto propio libera oxitocina.", # Auto-soothing
+        "🕯️ Enciende una luz cálida. La iluminación afecta a tu estado de ánimo.", # Ambiente
+        "🎵 Pon una canción que te calme o te empodere. La música regula emociones.", # Regulación auditiva
+        "🧴 Ponte crema o perfume. Cuida tu piel. Tu cuerpo es tu hogar.", # Ritual sensorial
+        "💭 Di: 'Merezco este cuidado'. Repítelo hasta que lo sientas.", # Afirmación positiva
+        "📝 Anota 1 necesidad para mañana. Planificar reduce la ansiedad.", # Anticipación
+        "✨ Eres tu propia prioridad. Cuidarte es la base para cuidar a otros." # Jerarquía de necesidades
+    ],
+    aprendizaje: [
+        "🎯 Elige algo pequeño. No tienes que aprenderlo todo hoy.", # Microlearning
+        "🔍 Busca 1 fuente confiable. Internet es vasto, enfócate.", # Selección
+        "⏱️ 10 min de atención plena. La curiosidad es un músculo.", # Enfoque
+        "👀 Lee o observa con atención. Aprende a aprender.", # Metacognición
+        "📝 Anota 1 idea clave con tus palabras. Si lo explicas, lo entiendes.", # Técnica Feynman
+        "🤔 ¿Cómo lo aplico hoy? El conocimiento sin acción es solo info.", # Transferencia
+        "💬 Compártelo con alguien (o conmigo). Enseñar refuerza el aprendizaje.", # Efecto protégé
+        "🔄 Repite la idea. La repetición espaciada fija la memoria.", # Neurociencia
+        "💡 Visualiza tu 'yo futuro' agradecido por esto.", # Motivación intrínseca
+        "✨ Nunca es tarde para aprender algo nuevo. Tu cerebro es plástico." # Neuroplasticidad
+    ],
+    silencio: [
+        "📵 Silencia el móvil. El ruido digital impide escuchar tu voz interior.", # Desintoxicación digital
+        "🔕 Cierra pestañas. Tu mente necesita espacio, no más información.", # Reducción de carga cognitiva
+        "🪑 Siéntate en silencio. Al principio sentirás ruido mental. Es normal.", # Validación
+        "⏱️ 5 min. No hables, no leas, no escuches música.", # Ayuno sensorial
+        "👀 Mira un punto fijo o cierra ojos. Reduce la entrada visual.", # Enfoque interno
+        "👂 Escucha los sonidos del entorno sin etiquetarlos. Solo sonido puro.", # Mindfulness auditivo
+        "🌬️ Siente tu respiración. Es tu ancla más fiel.", # Anclaje
+        "💭 Cuando venga un pensamiento, déjalo pasar. No es una orden, es un sugerencia.", # Defusión
+        "🔔 Al terminar, mantén el silencio 1 min más. Integra la paz.", # Transición
+        "✨ En el silencio está la respuesta que buscas. Date permiso para escuchar." # Sabiduría interior
+    ]
+};
+   
     let conductaActualId = null;
     let synth = window.speechSynthesis;
     let hablando = false;
