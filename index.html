@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>FARO - Bienvenida</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,8 +28,8 @@
             display: inline-block;
         }
         @keyframes faroPulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); text-shadow: 0 0 0px #E6C200; }
-            50% { opacity: 1; transform: scale(1.08); text-shadow: 0 0 20px #E6C200; }
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.08); }
         }
         h1 {
             color: #E6C200;
@@ -48,23 +49,23 @@
             margin: 1.5rem 0;
             font-style: italic;
         }
-        button {
+        .btn {
+            display: inline-block;
             background: transparent;
             border: 2px solid #E6C200;
             color: #E6C200;
             padding: 0.8rem 2rem;
             font-size: 1rem;
             font-weight: 600;
-            cursor: pointer;
+            text-decoration: none;
             border-radius: 40px;
             transition: all 0.3s ease;
             margin-top: 1rem;
+            cursor: pointer;
         }
-        button:hover {
+        .btn:hover {
             background-color: #E6C200;
             color: #111111;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(230,194,0,0.3);
         }
         .apoyo {
             margin-top: 2.5rem;
@@ -81,26 +82,14 @@
             text-decoration: none;
             font-size: 0.75rem;
             opacity: 0.7;
-            transition: opacity 0.3s;
         }
-        .apoyo-enlace:hover { opacity: 1; }
+        .apoyo-enlace:hover {
+            opacity: 1;
+        }
         .creador {
             color: #4A6FA5;
             font-size: 0.6rem;
             margin-top: 0.8rem;
-        }
-        /* Estado de carga */
-        .loading {
-            color: #666;
-            font-size: 0.8rem;
-            margin-top: 1rem;
-            font-style: italic;
-            min-height: 1.2em;
-        }
-        /* Accesibilidad: reducir movimiento */
-        @media (prefers-reduced-motion: reduce) {
-            .faro { animation: none !important; }
-            button { transition: none !important; }
         }
     </style>
 </head>
@@ -116,9 +105,8 @@
     
     <div class="frase">"Obrar es crecer"</div>
     
-    <button id="btnEmpezar">ENCENDER FARO</button>
-    
-    <div class="loading" id="loadingMsg"></div>
+    <!-- Enlace directo SIN JavaScript -->
+    <a href="seleccion.html" class="btn">ENCENDER FARO</a>
     
     <div class="apoyo">
         <div class="apoyo-texto">FARO es y será siempre libre, anónimo y sin condiciones</div>
@@ -128,51 +116,5 @@
         <div class="creador">Creado con ❤️ para introexploradores</div>
     </div>
 </div>
-
-<script>
-    const PACTO_KEY = 'faro_pacto_nuevo';
-    const loadingMsg = document.getElementById('loadingMsg');
-    const btnEmpezar = document.getElementById('btnEmpezar');
-
-    function redirigir() {
-        try {
-            const dato = localStorage.getItem(PACTO_KEY);
-            const pacto = dato ? JSON.parse(dato) : null;
-            
-            // Si tiene conductas activas, va al ritmo. Si no, a selección.
-            if (pacto && pacto.conductasActivas && pacto.conductasActivas.length > 0) {
-                loadingMsg.textContent = "✨ Tu ritmo te espera...";
-                setTimeout(() => { window.location.href = 'ritmo.html'; }, 800);
-            } else {
-                loadingMsg.textContent = "🌱 Empecemos por elegir...";
-                setTimeout(() => { window.location.href = 'seleccion.html'; }, 800);
-            }
-        } catch (e) {
-            // Si hay error, limpiar y empezar fresco
-            console.warn('Error al cargar pacto, reiniciando:', e);
-            localStorage.removeItem(PACTO_KEY);
-            loadingMsg.textContent = "🔄 Preparando tu espacio...";
-            setTimeout(() => { window.location.href = 'seleccion.html'; }, 800);
-        }
-    }
-
-    // Click en el botón principal
-    btnEmpezar.onclick = () => {
-        btnEmpezar.disabled = true;
-        btnEmpezar.style.opacity = '0.6';
-        redirigir();
-    };
-
-    // Opcional: si el usuario ya tiene pacto, mostrar mensaje cálido al cargar
-    document.addEventListener('DOMContentLoaded', () => {
-        try {
-            const dato = localStorage.getItem(PACTO_KEY);
-            const pacto = dato ? JSON.parse(dato) : null;
-            if (pacto && pacto.conductasActivas && pacto.conductasActivas.length > 0) {
-                loadingMsg.textContent = "💛 Bienvenide de nuevo. Tu faro sigue encendido.";
-            }
-        } catch(e) {}
-    });
-</script>
 </body>
 </html>
