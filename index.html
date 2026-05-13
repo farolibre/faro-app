@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>FARO - Bienvenida</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -82,13 +83,24 @@
             opacity: 0.7;
             transition: opacity 0.3s;
         }
-        .apoyo-enlace:hover {
-            opacity: 1;
-        }
+        .apoyo-enlace:hover { opacity: 1; }
         .creador {
             color: #4A6FA5;
             font-size: 0.6rem;
             margin-top: 0.8rem;
+        }
+        /* Estado de carga */
+        .loading {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            font-style: italic;
+            min-height: 1.2em;
+        }
+        /* Accesibilidad: reducir movimiento */
+        @media (prefers-reduced-motion: reduce) {
+            .faro { animation: none !important; }
+            button { transition: none !important; }
         }
     </style>
 </head>
@@ -106,6 +118,8 @@
     
     <button id="btnEmpezar">ENCENDER FARO</button>
     
+    <div class="loading" id="loadingMsg"></div>
+    
     <div class="apoyo">
         <div class="apoyo-texto">FARO es y será siempre libre, anónimo y sin condiciones</div>
         <a href="https://ko-fi.com/faro20" target="_blank" class="apoyo-enlace">
@@ -116,9 +130,49 @@
 </div>
 
 <script>
-    document.getElementById('btnEmpezar').onclick = () => {
-        window.location.href = 'seleccion.html';
+    const PACTO_KEY = 'faro_pacto_nuevo';
+    const loadingMsg = document.getElementById('loadingMsg');
+    const btnEmpezar = document.getElementById('btnEmpezar');
+
+    function redirigir() {
+        try {
+            const dato = localStorage.getItem(PACTO_KEY);
+            const pacto = dato ? JSON.parse(dato) : null;
+            
+            // Si tiene conductas activas, va al ritmo. Si no, a selección.
+            if (pacto && pacto.conductasActivas && pacto.conductasActivas.length > 0) {
+                loadingMsg.textContent = "✨ Tu ritmo te espera...";
+                setTimeout(() => { window.location.href = 'ritmo.html'; }, 800);
+            } else {
+                loadingMsg.textContent = "🌱 Empecemos por elegir...";
+                setTimeout(() => { window.location.href = 'seleccion.html'; }, 800);
+            }
+        } catch (e) {
+            // Si hay error, limpiar y empezar fresco
+            console.warn('Error al cargar pacto, reiniciando:', e);
+            localStorage.removeItem(PACTO_KEY);
+            loadingMsg.textContent = "🔄 Preparando tu espacio...";
+            setTimeout(() => { window.location.href = 'seleccion.html'; }, 800);
+        }
+    }
+
+    // Click en el botón principal
+    btnEmpezar.onclick = () => {
+        btnEmpezar.disabled = true;
+        btnEmpezar.style.opacity = '0.6';
+        redirigir();
     };
+
+    // Opcional: si el usuario ya tiene pacto, mostrar mensaje cálido al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            const dato = localStorage.getItem(PACTO_KEY);
+            const pacto = dato ? JSON.parse(dato) : null;
+            if (pacto && pacto.conductasActivas && pacto.conductasActivas.length > 0) {
+                loadingMsg.textContent = "💛 Bienvenide de nuevo. Tu faro sigue encendido.";
+            }
+        } catch(e) {}
+    });
 </script>
 </body>
 </html>

@@ -1,140 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FARO - Elegir conducta</title>
     <style>
-        body {
-            background-color: #111111;
-            font-family: system-ui, monospace;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 2rem;
-        }
-        .container {
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-        }
-        h1 {
-            color: #E6C200;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .subtitulo {
-            color: #808080;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-            margin-bottom: 2rem;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding: 0.5rem;
-        }
-        .tarjeta {
-            border: 1px solid #2A2A2A;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .tarjeta:hover, .tarjeta.seleccionada {
-            border-color: #E6C200;
-            background-color: rgba(230,194,0,0.1);
-        }
-        .emoji {
-            font-size: 2rem;
-            display: block;
-        }
-        .nombre {
-            color: #CCCCCC;
-            font-size: 0.8rem;
-        }
-        button {
-            background: transparent;
-            border: 1px solid #808080;
-            color: #808080;
-            padding: 0.8rem;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:enabled {
-            border-color: #E6C200;
-            color: #E6C200;
-        }
-        .btn-atras {
-            border: none;
-            color: #808080;
-            margin-top: 1rem;
-        }
+        :root { --bg: #0a0a0a; --card: #1A1A1A; --primary: #E6C200; --text: #fff; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui; margin: 0; padding: 2rem; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        h1 { color: var(--primary); margin-bottom: 0.5rem; text-align: center; }
+        p { color: #888; margin-bottom: 2rem; text-align: center; max-width: 400px; line-height: 1.5; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; width: 100%; max-width: 600px; margin-bottom: 2rem; }
+        .item { background: var(--card); border: 2px solid #333; border-radius: 16px; padding: 1rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .item:hover { border-color: #555; }
+        .item.seleccionado { border-color: var(--primary); background: rgba(230, 194, 0, 0.1); }
+        .item .emoji { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+        .item .nombre { font-size: 0.9rem; font-weight: 500; }
+        .btn-continuar { background: var(--primary); color: #000; border: none; padding: 1rem 2rem; border-radius: 50px; font-weight: bold; font-size: 1rem; cursor: pointer; width: 100%; max-width: 300px; opacity: 0.5; pointer-events: none; transition: all 0.3s; }
+        .btn-continuar.activo { opacity: 1; pointer-events: auto; }
+        .btn-volver { background: transparent; color: #666; border: none; margin-top: 1rem; cursor: pointer; text-decoration: underline; }
+        .info { background: rgba(230, 194, 0, 0.05); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; max-width: 500px; font-size: 0.9rem; color: #aaa; }
     </style>
 </head>
 <body>
-<div class="container">
     <h1>🌱 ¿Qué quieres regular?</h1>
-    <div class="subtitulo">Elige una conducta para empezar</div>
-    <div class="grid" id="grid"></div>
-    <button id="btnContinuar" disabled>CONTINUAR</button>
-    <button class="btn-atras" id="btnAtras">← VOLVER</button>
-</div>
-<script>
-    // Lista de conductas disponibles
-    const conductas = [
-        { id: 'comer', emoji: '🍽️', nombre: 'Comer' },
-        { id: 'dormir', emoji: '🌙', nombre: 'Dormir' },
-        { id: 'higiene', emoji: '🚿', nombre: 'Higiene' },
-        { id: 'salir', emoji: '🚪', nombre: 'Salir de casa' },
-        { id: 'movimiento', emoji: '🚶', nombre: 'Movimiento' },
-        { id: 'contacto', emoji: '💬', nombre: 'Contacto social' },
-        { id: 'consumo', emoji: '🍷', nombre: 'Consumo' },
-        { id: 'pantallas', emoji: '📱', nombre: 'Pantallas' },
-        { id: 'compras', emoji: '🛍️', nombre: 'Compras' },
-        { id: 'higiene_extrema', emoji: '🧼', nombre: 'Higiene extrema' },
-        { id: 'trabajo', emoji: '💼', nombre: 'Trabajo/Estudio' },
-        { id: 'meditacion', emoji: '🧘', nombre: 'Meditación' },
-        { id: 'orden', emoji: '🧹', nombre: 'Orden/Limpieza' }
-    ];
+    <p>Elige las conductas que te gustaría acompañar en tu día a día. Puedes cambiarlas cuando lo necesites.</p>
     
-    let seleccionada = null;
-    const grid = document.getElementById('grid');
+    <div class="info">
+        💛 <strong>Sin presión:</strong> No hay metas rígidas. Solo pequeños pasos hacia tu bienestar.
+    </div>
     
-    // Crear tarjetas para cada conducta
-    conductas.forEach(c => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'tarjeta';
-        tarjeta.innerHTML = `<span class="emoji">${c.emoji}</span><span class="nombre">${c.nombre}</span>`;
-        
-        tarjeta.onclick = () => {
-            // Quitar selección de todas
-            document.querySelectorAll('.tarjeta').forEach(t => t.classList.remove('seleccionada'));
-            // Seleccionar esta
-            tarjeta.classList.add('seleccionada');
-            seleccionada = c;
-            document.getElementById('btnContinuar').disabled = false;
-            // Guardar en localStorage
-            localStorage.setItem('conducta_elegida', JSON.stringify(c));
-        };
-        
-        grid.appendChild(tarjeta);
-    });
+    <div class="grid" id="gridConductas"></div>
     
-    // Botón CONTINUAR
-    document.getElementById('btnContinuar').onclick = () => {
-        if (seleccionada) {
-            window.location.href = 'pacto.html';
+    <button class="btn-continuar" id="btnContinuar">COMENZAR MI RITMO →</button>
+    <button class="btn-volver" onclick="window.location.href='index.html'">← Volver al inicio</button>
+
+    <script>
+        const TODAS_CONDUCTAS = [
+            { id: "comer", nombre: "Comer", emoji: "🍽️" }, { id: "dormir", nombre: "Dormir", emoji: "😴" },
+            { id: "higiene", nombre: "Higiene", emoji: "🚿" }, { id: "salir", nombre: "Salir", emoji: "🚪" },
+            { id: "movimiento", nombre: "Movimiento", emoji: "💪" }, { id: "contacto", nombre: "Contacto social", emoji: "💬" },
+            { id: "consumo", nombre: "Consumo", emoji: "🍷" }, { id: "pantallas", nombre: "Pantallas", emoji: "📱" },
+            { id: "compras", nombre: "Compras", emoji: "🛍️" }, { id: "higieneExtrema", nombre: "Higiene extrema", emoji: "🧼" },
+            { id: "meditacion", nombre: "Meditación", emoji: "🧘" }, { id: "lectura", nombre: "Lectura", emoji: "📚" },
+            { id: "gratitud", nombre: "Gratitud", emoji: "🙏" }, { id: "orden", nombre: "Orden", emoji: "🧹" },
+            { id: "creatividad", nombre: "Creatividad", emoji: "🎨" }, { id: "naturaleza", nombre: "Naturaleza", emoji: "🌿" },
+            { id: "limites", nombre: "Límites", emoji: "🚧" }, { id: "autocuidado", nombre: "Autocuidado", emoji: "💆" },
+            { id: "aprendizaje", nombre: "Aprendizaje", emoji: "🎓" }, { id: "silencio", nombre: "Silencio digital", emoji: "🔇" }
+        ];
+
+        let seleccionadas = new Set();
+
+        function renderizar() {
+            const grid = document.getElementById('gridConductas');
+            grid.innerHTML = '';
+            
+            try {
+                const pacto = JSON.parse(localStorage.getItem('faro_pacto_nuevo'));
+                if(pacto && pacto.conductasActivas) {
+                    pacto.conductasActivas.forEach(c => seleccionadas.add(c.id));
+                }
+            } catch(e) {}
+
+            TODAS_CONDUCTAS.forEach(c => {
+                const div = document.createElement('div');
+                div.className = `item ${seleccionadas.has(c.id) ? 'seleccionado' : ''}`;
+                div.innerHTML = `<span class="emoji">${c.emoji}</span><span class="nombre">${c.nombre}</span>`;
+                div.onclick = () => {
+                    if(seleccionadas.has(c.id)) seleccionadas.delete(c.id);
+                    else seleccionadas.add(c.id);
+                    renderizar();
+                    actualizarBoton();
+                };
+                grid.appendChild(div);
+            });
         }
-    };
-    
-    // Botón VOLVER
-    document.getElementById('btnAtras').onclick = () => {
-        window.location.href = 'index.html';
-    };
-</script>
+
+        function actualizarBoton() {
+            const btn = document.getElementById('btnContinuar');
+            if(seleccionadas.size > 0) btn.classList.add('activo');
+            else btn.classList.remove('activo');
+        }
+
+        document.getElementById('btnContinuar').onclick = () => {
+            if(seleccionadas.size === 0) return;
+            
+            const pacto = {
+                conductasActivas: TODAS_CONDUCTAS.filter(c => seleccionadas.has(c.id))
+                    .map(c => ({...c, fechaInicio: new Date().toISOString()}))
+            };
+            
+            localStorage.setItem('faro_pacto_nuevo', JSON.stringify(pacto));
+            window.location.href = 'ritmo.html';
+        };
+
+        renderizar();
+        actualizarBoton();
+    </script>
 </body>
 </html>

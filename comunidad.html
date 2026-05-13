@@ -2,178 +2,143 @@
 <html>
 <head>
     <title>FARO - Comunidad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             background-color: #111111;
             font-family: system-ui, monospace;
             margin: 0;
             padding: 1rem;
+            color: #CCCCCC;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: #E6C200; font-size: 1.3rem; text-align: center; margin-bottom: 0.5rem; }
+        .subtitulo { color: #808080; font-size: 0.8rem; text-align: center; margin-bottom: 1rem; }
+        
+        /* Aviso importante sobre alcance local */
+        .aviso-local {
+            background: rgba(74, 111, 165, 0.1);
+            border-left: 3px solid #4A6FA5;
+            padding: 0.6rem 1rem;
+            font-size: 0.75rem;
+            color: #8899aa;
+            margin-bottom: 1.2rem;
+            border-radius: 0 8px 8px 0;
         }
-        h1 {
-            color: #E6C200;
-            font-size: 1.3rem;
-            text-align: center;
-            margin-bottom: 0.5rem;
+        
+        .stats {
+            display: flex; justify-content: space-between; margin-bottom: 1rem; gap: 0.5rem;
         }
-        .subtitulo {
-            color: #808080;
-            font-size: 0.8rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
+        .stat {
+            background-color: #1A1A1A; padding: 0.5rem; text-align: center;
+            flex: 1; border: 1px solid #2A2A2A; border-radius: 8px;
         }
+        .stat-valor { color: #E6C200; font-size: 1.2rem; font-weight: bold; }
+        .stat-label { color: #808080; font-size: 0.65rem; }
+        
         .escribir {
-            background-color: #1A1A1A;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #2A2A2A;
+            background-color: #1A1A1A; padding: 1rem; margin-bottom: 1.5rem;
+            border: 1px solid #2A2A2A; border-radius: 12px;
         }
         textarea {
-            width: 100%;
-            background-color: #111111;
-            border: 1px solid #2A2A2A;
-            color: #CCCCCC;
-            padding: 0.6rem;
-            box-sizing: border-box;
-            margin-bottom: 0.5rem;
-            font-family: inherit;
+            width: 100%; background-color: #111111; border: 1px solid #2A2A2A;
+            color: #CCCCCC; padding: 0.6rem; box-sizing: border-box;
+            margin-bottom: 0.5rem; font-family: inherit; border-radius: 8px;
+            resize: vertical; min-height: 60px;
         }
+        .contador-caracteres {
+            text-align: right; font-size: 0.7rem; color: #666; margin-bottom: 0.5rem;
+        }
+        .contador-caracteres.aviso { color: #E6C200; }
+        
         .btn-publicar {
-            background: transparent;
-            border: 1px solid #E6C200;
-            color: #E6C200;
-            padding: 0.5rem;
-            cursor: pointer;
-            width: 100%;
+            background: transparent; border: 1px solid #E6C200; color: #E6C200;
+            padding: 0.5rem; cursor: pointer; width: 100%; border-radius: 40px;
+            font-weight: 500; transition: all 0.2s;
         }
-        .btn-publicar:hover {
-            background-color: #E6C200;
-            color: #111111;
-        }
+        .btn-publicar:hover { background-color: #E6C200; color: #111111; }
+        .btn-publicar:disabled { opacity: 0.5; cursor: not-allowed; }
         
         /* Mensajes */
         .mensaje {
-            background-color: #1A1A1A;
-            border: 1px solid #2A2A2A;
-            padding: 0.8rem;
-            margin-bottom: 0.8rem;
-            transition: all 0.3s ease;
+            background-color: #1A1A1A; border: 1px solid #2A2A2A; padding: 0.8rem;
+            margin-bottom: 0.8rem; border-radius: 12px; transition: all 0.3s ease;
         }
-        .mensaje-premiado {
-            border: 2px solid #E6C200;
-            background-color: rgba(230, 194, 0, 0.1);
-            box-shadow: 0 0 10px rgba(230, 194, 0, 0.3);
+        .mensaje-resono {
+            border: 2px solid #E6C200; background-color: rgba(230, 194, 0, 0.08);
+            box-shadow: 0 0 10px rgba(230, 194, 0, 0.2);
         }
         .mensaje-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 0.5rem; gap: 0.5rem; flex-wrap: wrap;
         }
-        .autor {
-            color: #E6C200;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .fecha {
-            color: #808080;
-            font-size: 0.6rem;
-        }
-        .texto {
-            color: #CCCCCC;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-bottom: 0.6rem;
-        }
-        .corazones {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .autor { color: #E6C200; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 0.3rem; }
+        .fecha { color: #666; font-size: 0.6rem; }
+        .texto { color: #CCCCCC; font-size: 0.85rem; line-height: 1.4; margin-bottom: 0.6rem; white-space: pre-wrap; }
+        
+        .acciones {
+            display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
         }
         .btn-corazon {
-            background: transparent;
-            border: 1px solid #2A2A2A;
-            color: #808080;
-            padding: 0.2rem 0.5rem;
-            cursor: pointer;
-            font-size: 0.7rem;
-            border-radius: 20px;
-            width: auto;
+            background: transparent; border: 1px solid #2A2A2A; color: #808080;
+            padding: 0.2rem 0.6rem; cursor: pointer; font-size: 0.7rem;
+            border-radius: 20px; width: auto; display: flex; align-items: center; gap: 0.3rem;
+            transition: all 0.2s;
         }
-        .btn-corazon:hover {
-            border-color: #E6C200;
+        .btn-corazon:hover { border-color: #E6C200; color: #E6C200; }
+        .btn-corazon.activo { border-color: #E6C200; color: #E6C200; background: rgba(230,194,0,0.1); }
+        
+        .btn-eliminar {
+            background: transparent; border: 1px solid #333; color: #555;
+            padding: 0.2rem 0.5rem; cursor: pointer; font-size: 0.65rem;
+            border-radius: 20px; width: auto; margin-left: auto;
         }
-        .btn-corazon.activo {
-            border-color: #E6C200;
-            color: #E6C200;
+        .btn-eliminar:hover { border-color: #888; color: #888; }
+        
+        .contador-corazones { color: #E6C200; font-size: 0.8rem; }
+        .badge-resono {
+            background-color: #E6C200; color: #111111; padding: 0.2rem 0.5rem;
+            border-radius: 20px; font-size: 0.65rem; font-weight: 500;
         }
-        .contador-corazones {
-            color: #E6C200;
-            font-size: 0.8rem;
-        }
-        .premio-badge {
-            background-color: #E6C200;
-            color: #111111;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            margin-left: 0.5rem;
-        }
+        
         .vacio {
-            text-align: center;
-            color: #808080;
-            padding: 2rem;
+            text-align: center; color: #808080; padding: 2rem; font-style: italic;
         }
         .btn-volver {
-            background: transparent;
-            border: 1px solid #808080;
-            color: #808080;
-            padding: 0.5rem;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 1rem;
+            background: transparent; border: 1px solid #808080; color: #808080;
+            padding: 0.5rem; cursor: pointer; width: 100%; margin-top: 1.5rem;
+            border-radius: 40px;
         }
-        .btn-volver:hover {
-            background-color: #808080;
-            color: #111111;
+        .btn-volver:hover { background-color: #808080; color: #111111; }
+        
+        /* Feedback inline */
+        .feedback {
+            text-align: center; padding: 0.5rem; font-size: 0.8rem;
+            color: #E6C200; min-height: 1.2em; margin-bottom: 0.5rem;
         }
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            gap: 0.5rem;
-        }
-        .stat {
-            background-color: #1A1A1A;
-            padding: 0.5rem;
-            text-align: center;
-            flex: 1;
-            border: 1px solid #2A2A2A;
-        }
-        .stat-valor {
-            color: #E6C200;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .stat-label {
-            color: #808080;
-            font-size: 0.65rem;
+        
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>🌱 Comunidad de apoyo</h1>
-    <div class="subtitulo">💬 Comparte tu experiencia | ❤️ Apoya a otros con un corazón</div>
+    <div class="subtitulo">💬 Comparte tu experiencia | 💛 Abrazos con el corazón</div>
+    
+    <div class="aviso-local">
+        💡 <strong>Espacio local:</strong> Tus mensajes viven solo en este dispositivo. 
+        Es un rincón íntimo para reflexionar, no un foro público.
+    </div>
     
     <div class="stats" id="stats"></div>
     
     <div class="escribir">
+        <div class="feedback" id="feedback"></div>
         <textarea id="mensaje" rows="2" placeholder="Comparte algo con la comunidad..."></textarea>
-        <button class="btn-publicar" id="btnPublicar">📨 PUBLICAR MENSAJE</button>
+        <div class="contador-caracteres" id="contador">0 / 280</div>
+        <button class="btn-publicar" id="btnPublicar" disabled>✨ COMPARTIR CON LA COMUNIDAD</button>
     </div>
     
     <div id="mensajes"></div>
@@ -182,39 +147,154 @@
 </div>
 
 <script>
-    // Cargar mensajes
-    let mensajes = JSON.parse(localStorage.getItem('comunidad_mensajes_corazones')) || [];
+    // ==========================================
+    // CONFIGURACIÓN COMPASIVA
+    // ==========================================
+    const MAX_CARACTERES = 280;
+    const UMBRAL_RESONANCIA = 3; // Mensajes que "resonaron"
+    const MAX_MENSAJES = 50; // Límite para no saturar localStorage
     
-    // Identidad del introexplorador actual (para saber si ya dio corazón)
-    let miId = localStorage.getItem('faro_intro_id');
-    if (!miId) {
-        miId = 'intro_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-        localStorage.setItem('faro_intro_id', miId);
-    }
+    // Claves de localStorage
+    const KEYS = {
+        MENSAJES: 'faro_comunidad_mensajes',
+        USER_ID: 'faro_intro_id'
+    };
     
-    // Actualizar estadísticas
-    function actualizarStats() {
-        const totalMensajes = mensajes.length;
-        const totalCorazones = mensajes.reduce((sum, m) => sum + (m.corazones || 0), 0);
-        const mensajesPremiados = mensajes.filter(m => (m.corazones || 0) >= 3).length;
+    // Estado
+    let mensajes = [];
+    let miId = '';
+    
+    // ==========================================
+    // INICIALIZACIÓN
+    // ==========================================
+    function init() {
+        // Identidad anónima persistente
+        miId = localStorage.getItem(KEYS.USER_ID);
+        if (!miId) {
+            miId = 'intro_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+            localStorage.setItem(KEYS.USER_ID, miId);
+        }
         
-        document.getElementById('stats').innerHTML = `
-            <div class="stat">
-                <div class="stat-valor">${totalMensajes}</div>
-                <div class="stat-label">mensajes</div>
-            </div>
-            <div class="stat">
-                <div class="stat-valor">❤️ ${totalCorazones}</div>
-                <div class="stat-label">corazones dados</div>
-            </div>
-            <div class="stat">
-                <div class="stat-valor">🏆 ${mensajesPremiados}</div>
-                <div class="stat-label">premiados</div>
-            </div>
-        `;
+        // Cargar mensajes con validación
+        try {
+            const guardados = localStorage.getItem(KEYS.MENSAJES);
+            mensajes = guardados ? JSON.parse(guardados) : [];
+            // Validar estructura básica
+            mensajes = mensajes.filter(m => m.id && m.texto && m.fecha);
+        } catch(e) {
+            console.warn('Error al cargar mensajes, reiniciando:', e);
+            mensajes = [];
+        }
+        
+        // Event listeners
+        configurarEventos();
+        
+        // Render inicial
+        actualizarStats();
+        mostrarMensajes();
     }
     
-    // Dar/Quitar corazón
+    function configurarEventos() {
+        const textarea = document.getElementById('mensaje');
+        const btnPublicar = document.getElementById('btnPublicar');
+        const contador = document.getElementById('contador');
+        
+        // Contador de caracteres en tiempo real
+        textarea.addEventListener('input', () => {
+            const longitud = textarea.value.length;
+            contador.textContent = `${longitud} / ${MAX_CARACTERES}`;
+            
+            if (longitud > MAX_CARACTERES * 0.9) {
+                contador.classList.add('aviso');
+            } else {
+                contador.classList.remove('aviso');
+            }
+            
+            // Habilitar botón si hay contenido válido
+            const textoLimpio = textarea.value.trim();
+            btnPublicar.disabled = textoLimpio.length === 0 || longitud > MAX_CARACTERES;
+        });
+        
+        // Publicar mensaje
+        btnPublicar.addEventListener('click', publicarMensaje);
+        
+        // Volver
+        document.getElementById('btnVolver').addEventListener('click', () => {
+            window.location.href = 'ritmo.html';
+        });
+    }
+    
+    // ==========================================
+    // FUNCIONES PRINCIPALES
+    // ==========================================
+    function publicarMensaje() {
+        const textarea = document.getElementById('mensaje');
+        const feedback = document.getElementById('feedback');
+        const texto = textarea.value.trim();
+        
+        if (!texto) {
+            mostrarFeedback('Escribe algo antes de compartir ✍️');
+            return;
+        }
+        
+        if (texto.length > MAX_CARACTERES) {
+            mostrarFeedback('Tu mensaje es un poco largo. ¿Puedes resumirlo con cariño? 🌱');
+            return;
+        }
+        
+        // Emoji según conducta principal (si existe)
+        let emoji = '🌱';
+        try {
+            const pacto = JSON.parse(localStorage.getItem('faro_pacto_nuevo') || '{}');
+            if (pacto.conductasActivas?.[0]?.emoji) {
+                emoji = pacto.conductasActivas[0].emoji;
+            }
+        } catch(e) {}
+        
+        const nuevoMensaje = {
+            id: Date.now(),
+            autor: `${emoji} Introexplorador`,
+            texto: texto,
+            fecha: new Date().toISOString(),
+            corazones: 0,
+            corazonesUsuarios: [],
+            autorId: miId // Para permitir borrar solo los propios
+        };
+        
+        // Añadir al inicio y limitar cantidad
+        mensajes.unshift(nuevoMensaje);
+        if (mensajes.length > MAX_MENSAJES) {
+            mensajes = mensajes.slice(0, MAX_MENSAJES);
+        }
+        
+        // Guardar
+        try {
+            localStorage.setItem(KEYS.MENSAJES, JSON.stringify(mensajes));
+        } catch(e) {
+            console.error('No se pudo guardar el mensaje:', e);
+            mostrarFeedback('No se pudo guardar. Intenta de nuevo 💛');
+            return;
+        }
+        
+        // Reset y feedback
+        textarea.value = '';
+        document.getElementById('contador').textContent = `0 / ${MAX_CARACTERES}`;
+        document.getElementById('btnPublicar').disabled = true;
+        
+        mostrarFeedback('💚 Tu mensaje se compartió. Gracias por abrirte.');
+        
+        // Re-render
+        mostrarMensajes();
+        actualizarStats();
+        
+        // Limpiar feedback después de 3s
+        setTimeout(() => mostrarFeedback(''), 3000);
+    }
+    
+    function mostrarFeedback(mensaje) {
+        document.getElementById('feedback').textContent = mensaje;
+    }
+    
     function darCorazon(mensajeId) {
         const mensaje = mensajes.find(m => m.id === mensajeId);
         if (!mensaje) return;
@@ -222,81 +302,152 @@
         if (!mensaje.corazonesUsuarios) mensaje.corazonesUsuarios = [];
         
         if (mensaje.corazonesUsuarios.includes(miId)) {
-            // Quitar corazón
+            // Retirar corazón con cuidado
             mensaje.corazonesUsuarios = mensaje.corazonesUsuarios.filter(id => id !== miId);
-            mensaje.corazones = (mensaje.corazones || 0) - 1;
+            mensaje.corazones = Math.max(0, (mensaje.corazones || 0) - 1);
         } else {
             // Dar corazón
             mensaje.corazonesUsuarios.push(miId);
             mensaje.corazones = (mensaje.corazones || 0) + 1;
         }
         
-        localStorage.setItem('comunidad_mensajes_corazones', JSON.stringify(mensajes));
-        mostrarMensajes();
+        guardarYRenderizar();
     }
     
-    // Escapar HTML
-    function escapeHtml(texto) {
-        return texto.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    // Mostrar mensajes
-    function mostrarMensajes() {
-        const container = document.getElementById('mensajes');
-        
-        if (mensajes.length === 0) {
-            container.innerHTML = '<div class="vacio">🌱 No hay mensajes aún. ¡Sé el primero en compartir algo!</div>';
-            actualizarStats();
+    function eliminarMensaje(mensajeId) {
+        // Confirmación suave
+        if (!confirm('¿Borrar este mensaje?\n\nNo se puede deshacer, pero tu bienestar es lo primero.')) {
             return;
         }
         
-        // Ordenar: primeros los premiados (3+ corazones), luego por fecha
-        const ordenados = [...mensajes].sort((a, b) => {
-            const aPremiado = (a.corazones || 0) >= 3;
-            const bPremiado = (b.corazones || 0) >= 3;
-            if (aPremiado && !bPremiado) return -1;
-            if (!aPremiado && bPremiado) return 1;
-            return b.id - a.id;
+        const indice = mensajes.findIndex(m => m.id === mensajeId);
+        if (indice !== -1) {
+            // En vez de borrar completamente, marcamos como eliminado para mantener coherencia visual
+            mensajes[indice] = {
+                ...mensajes[indice],
+                texto: '[Mensaje retirado con cariño 🌿]',
+                eliminado: true
+            };
+            guardarYRenderizar();
+        }
+    }
+    
+    function guardarYRenderizar() {
+        try {
+            localStorage.setItem(KEYS.MENSAJES, JSON.stringify(mensajes));
+            mostrarMensajes();
+            actualizarStats();
+        } catch(e) {
+            console.error('Error al guardar:', e);
+            mostrarFeedback('Algo no funcionó al guardar. Intenta de nuevo 💛');
+        }
+    }
+    
+    // ==========================================
+    // RENDERIZADO
+    // ==========================================
+    function actualizarStats() {
+        const totalMensajes = mensajes.filter(m => !m.eliminado).length;
+        const totalCorazones = mensajes.reduce((sum, m) => sum + (m.corazones || 0), 0);
+        const resonaron = mensajes.filter(m => (m.corazones || 0) >= UMBRAL_RESONANCIA && !m.eliminado).length;
+        
+        document.getElementById('stats').innerHTML = `
+            <div class="stat">
+                <div class="stat-valor">${totalMensajes}</div>
+                <div class="stat-label">palabras compartidas</div>
+            </div>
+            <div class="stat">
+                <div class="stat-valor">💛 ${totalCorazones}</div>
+                <div class="stat-label">gestos de apoyo</div>
+            </div>
+            <div class="stat">
+                <div class="stat-valor">✨ ${resonaron}</div>
+                <div class="stat-label">mensajes que resonaron</div>
+            </div>
+        `;
+    }
+    
+    function formatoFechaRelativa(fechaIso) {
+        try {
+            const fecha = new Date(fechaIso);
+            const ahora = new Date();
+            const diffMinutos = Math.floor((ahora - fecha) / (1000 * 60));
+            
+            if (diffMinutos < 1) return 'ahora';
+            if (diffMinutos < 60) return `hace ${diffMinutos}m`;
+            if (diffMinutos < 1440) return `hace ${Math.floor(diffMinutos/60)}h`;
+            return fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        } catch {
+            return '';
+        }
+    }
+    
+    function mostrarMensajes() {
+        const container = document.getElementById('mensajes');
+        
+        // Filtrar mensajes no eliminados para la vista principal
+        const visibles = mensajes.filter(m => !m.eliminado);
+        
+        if (visibles.length === 0) {
+            container.innerHTML = `
+                <div class="vacio">
+                    🌱 Aún no hay mensajes.<br><br>
+                    <em>Sé el primero en compartir algo. Tu voz importa.</em>
+                </div>
+            `;
+            return;
+        }
+        
+        // Ordenar: primero los que resonaron, luego por fecha (más recientes primero)
+        const ordenados = [...visibles].sort((a, b) => {
+            const aResono = (a.corazones || 0) >= UMBRAL_RESONANCIA;
+            const bResono = (b.corazones || 0) >= UMBRAL_RESONANCIA;
+            if (aResono && !bResono) return -1;
+            if (!aResono && bResono) return 1;
+            return b.id - a.id; // Más reciente primero
         });
         
         let html = '';
         for (const m of ordenados) {
             const corazones = m.corazones || 0;
-            const esPremiado = corazones >= 3;
-            const yaDioCorazon = m.corazonesUsuarios && m.corazonesUsuarios.includes(miId);
+            const resono = corazones >= UMBRAL_RESONANCIA;
+            const yaAbrazo = m.corazonesUsuarios?.includes(miId);
+            const esPropio = m.autorId === miId;
             
-            let premioBadge = '';
-            if (esPremiado) {
-                premioBadge = '<span class="premio-badge">🏆 MENSAJE DESTACADO</span>';
-            }
+            // Badge de resonancia (lenguaje compasivo)
+            const badgeResono = resono ? '<span class="badge-resono">✨ Resonó</span>' : '';
             
-            let mensajeClass = 'mensaje';
-            if (esPremiado) mensajeClass += ' mensaje-premiado';
+            // Clase para estilo destacado
+            const claseMensaje = resono ? 'mensaje mensaje-resono' : 'mensaje';
             
-            let corazonesHtml = '';
-            if (corazones > 0) {
-                corazonesHtml = `<span class="contador-corazones">❤️ ${corazones}</span>`;
-            }
+            // Contador de corazones
+            const contadorCorazones = corazones > 0 ? `<span class="contador-corazones">💛 ${corazones}</span>` : '';
+            
+            // Botón de eliminar (solo para mensajes propios)
+            const btnEliminar = esPropio ? 
+                `<button class="btn-eliminar" data-id="${m.id}">⋮</button>` : '';
+            
+            // Texto del mensaje (con escape seguro)
+            const textoSeguro = escapeHtml(m.texto);
             
             html += `
-                <div class="${mensajeClass}">
+                <div class="${claseMensaje}">
                     <div class="mensaje-header">
                         <div class="autor">
-                            ${m.autor || 'Introexplorador'} ${premioBadge}
+                            ${m.autor || 'Introexplorador'}
+                            ${badgeResono}
                         </div>
-                        <div class="fecha">${m.fecha}</div>
+                        <div style="display:flex;align-items:center;gap:0.5rem">
+                            <span class="fecha">${formatoFechaRelativa(m.fecha)}</span>
+                            ${btnEliminar}
+                        </div>
                     </div>
-                    <div class="texto">${escapeHtml(m.texto)}</div>
-                    <div class="corazones">
-                        <button class="btn-corazon ${yaDioCorazon ? 'activo' : ''}" data-id="${m.id}">
-                            ${yaDioCorazon ? '❤️' : '🤍'} Apoyar
+                    <div class="texto">${textoSeguro}</div>
+                    <div class="acciones">
+                        <button class="btn-corazon ${yaAbrazo ? 'activo' : ''}" data-id="${m.id}">
+                            ${yaAbrazo ? '💛' : '🤍'} Abrazar
                         </button>
-                        ${corazonesHtml}
+                        ${contadorCorazones}
                     </div>
                 </div>
             `;
@@ -304,8 +455,8 @@
         
         container.innerHTML = html;
         
-        // Añadir eventos a los botones de corazón
-        document.querySelectorAll('.btn-corazon').forEach(btn => {
+        // Añadir eventos a botones
+        container.querySelectorAll('.btn-corazon').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const id = parseInt(btn.getAttribute('data-id'));
@@ -313,54 +464,32 @@
             });
         });
         
-        actualizarStats();
+        container.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.getAttribute('data-id'));
+                eliminarMensaje(id);
+            });
+        });
     }
     
-    // Publicar mensaje
-    document.getElementById('btnPublicar').onclick = () => {
-        const texto = document.getElementById('mensaje').value.trim();
-        if (!texto) {
-            alert('Escribe algo antes de publicar.');
-            return;
-        }
-        
-        // Obtener la conducta principal del introexplorador (para personalizar)
-        let emoji = '🌱';
-        const pacto = localStorage.getItem('faro_pacto');
-        if (pacto) {
-            try {
-                const pactoObj = JSON.parse(pacto);
-                if (pactoObj.conductasActivas && pactoObj.conductasActivas.length > 0) {
-                    emoji = pactoObj.conductasActivas[0].emoji;
-                }
-            } catch(e) {}
-        }
-        
-        const nuevoMensaje = {
-            id: Date.now(),
-            autor: `${emoji} Introexplorador`,
-            texto: texto,
-            fecha: new Date().toLocaleString(),
-            corazones: 0,
-            corazonesUsuarios: []
-        };
-        
-        mensajes.unshift(nuevoMensaje);
-        if (mensajes.length > 100) mensajes = mensajes.slice(0, 100);
-        localStorage.setItem('comunidad_mensajes_corazones', JSON.stringify(mensajes));
-        
-        document.getElementById('mensaje').value = '';
-        mostrarMensajes();
-        
-        // Mensaje de agradecimiento
-        alert('💚 ¡Gracias por compartir! Tu mensaje ayuda a otros introexploradores.');
-    };
+    // ==========================================
+    // UTILIDADES
+    // ==========================================
+    function escapeHtml(texto) {
+        const div = document.createElement('div');
+        div.textContent = texto;
+        return div.innerHTML;
+    }
     
-    mostrarMensajes();
-    
-    document.getElementById('btnVolver').onclick = () => {
-        window.location.href = 'ritmo.html';
-    };
+    // ==========================================
+    // INICIAR
+    // ==========================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 </script>
 </body>
 </html>
